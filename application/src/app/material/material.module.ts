@@ -49,6 +49,8 @@ import {
   declarations: [],
   imports: [
     CommonModule,
+    BrowserAnimationsModule,
+    
     MatAutocompleteModule,
     MatCheckboxModule,
     MatDatepickerModule,
@@ -91,6 +93,8 @@ import {
     MatTableModule,
   ],
   exports: [
+    BrowserAnimationsModule,
+
     MatAutocompleteModule,
     MatCheckboxModule,
     MatDatepickerModule,

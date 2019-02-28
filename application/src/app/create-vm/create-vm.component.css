@@ -1,0 +1,17 @@
+.optionList {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  align-items: center;
+}
+
+.optionListItem {
+  display: inline-block;
+  height: inherit !important;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.optionCard:hover {
+  box-shadow: 0px 0px 10px #000;
+}
