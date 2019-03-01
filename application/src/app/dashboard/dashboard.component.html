@@ -2,43 +2,51 @@
   Dashboard
 </h1>
 
-<mat-card class="hoverable">
-  <mat-card-header>
-    <mat-card-title>Create VM</mat-card-title>
-    <mat-icon>add_to_queue</mat-icon>
-  </mat-card-header>
-</mat-card>
+<section *ngIf="loading">
+  <mat-spinner></mat-spinner>
+</section>
+<section *ngIf="!loading">
+  <h3>My VMs</h3>
+  <mat-list class="list">
+    <mat-list-item class="listitem">
+      <a [routerLink]="['/create-vm']" style="text-decoration:none;">
+      <mat-card class="hoverable listitemcard">
+        <mat-card-header>
+          <mat-card-title>Create VM</mat-card-title>
+          <mat-icon>add_to_queue</mat-icon>
+        </mat-card-header>
+      </mat-card>
+      </a>
+    </mat-list-item>
+    <mat-list-item *ngFor="let vm of vms" class="listitem">
+      <a [routerLink]="['/view-vm', vm.id]" style="text-decoration:none;">
+      <mat-card class="hoverable listitemcard">
+        <mat-card-header>
+          <mat-card-title>{{vm.name}}</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <mat-list>
+            <mat-list-item>
+              <p>Processor Cores: {{vm.processorCores}}<p>
+            </mat-list-item>
+            <mat-list-item>
+              <p>Virtual RAM: {{vm.virtualRam}}GB<p>
+            </mat-list-item>
+            <mat-list-item>
+              <p>Storage Space: {{vm.storageSpace}}GB<p>
+            </mat-list-item>
+            <mat-list-item>
+              <p>Price: {{vm.price}} cents per minute<p>
+            </mat-list-item>
+          </mat-list>
+        </mat-card-content>
+      </mat-card>
+      </a>
+    </mat-list-item>
+  </mat-list>
+</section>
 
-<h3>My VMs</h3>
-<mat-list class="list">
-  <mat-list-item *ngFor="let vm of vms" class="listitem">
-    <a [routerLink]="['/view-vm', vm.id]" style="text-decoration:none;">
-    <mat-card class="hoverable listitemcard">
-      <mat-card-header>
-        <mat-card-title>{{vm.name}}</mat-card-title>
-      </mat-card-header>
-      <mat-card-content>
-        <mat-list>
-          <mat-list-item>
-            <p>Processor Cores: {{vm.processorCores}}<p>
-          </mat-list-item>
-          <mat-list-item>
-            <p>Virtual RAM: {{vm.virtualRam}}GB<p>
-          </mat-list-item>
-          <mat-list-item>
-            <p>Storage Space: {{vm.storageSpace}}GB<p>
-          </mat-list-item>
-          <mat-list-item>
-            <p>Price: {{vm.price}} cents per minute<p>
-          </mat-list-item>
-        </mat-list>
-      </mat-card-content>
-    </mat-card>
-    </a>
-  </mat-list-item>
-</mat-list>
-
-<ul>
+<!-- <ul>
   <li>
     <a [routerLink]="['/create-vm']">Create VM</a>
   </li>
@@ -63,4 +71,4 @@
   <li>
     <a [routerLink]="['/charges']">Charges</a>
   </li>
-</ul>
+</ul> -->

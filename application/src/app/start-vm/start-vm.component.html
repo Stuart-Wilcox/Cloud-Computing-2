@@ -1,3 +1,8 @@
-<p>
-  start-vm works!
-</p>
+<section *ngIf="loading">
+  <mat-spinner></mat-spinner>
+</section>
+<section *ngIf="!loading">
+  <p>
+    start-vm works!
+  </p>
+</section>

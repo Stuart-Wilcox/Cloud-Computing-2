@@ -6,7 +6,7 @@ export class VM {
   // public storageSpace: number; // GB
   // public price: number; // cents per minute
 
-  public status: string; // starting, stopping, scaling
+  public status: string; // running, stopped
 
   constructor(
     public id: string,
@@ -16,7 +16,9 @@ export class VM {
     public virtualRam,
     public storageSpace,
     public price
-  ) {}
+  ) {
+    this.status = 'running';
+  }
 
   public static getBasicInstance(id: string, name: string):VM {
     return new VM(id, name, 'Basic', 8, 16, 20, 5);

@@ -19,10 +19,19 @@ export class VMService {
   }
 
   async getVMs(): Promise<VM[]> {
-    return [ VM.getBasicInstance('0', 'MyApp1'), VM.getLargeInstance('0', 'MyApp2'), VM.getUltraLargeInstance('0', 'MyApp3')];
+    return new Promise((res, rej) => {
+      setTimeout(() => {
+        res([ VM.getBasicInstance('0', 'MyApp1'), VM.getLargeInstance('0', 'MyApp2'), VM.getUltraLargeInstance('0', 'MyApp3')]);
+      }, 3000);
+    });
   }
 
   async getVM(id: string): Promise<VM> {
-    return VM.getBasicInstance('0', 'MyApp1');
+    return new Promise((res, rej) => {
+      setTimeout(() => {
+        res(VM.getLargeInstance('0', 'MyApp2'))
+      }, 3000);
+    })
+    // return VM.getBasicInstance('0', 'MyApp1');
   }
 }

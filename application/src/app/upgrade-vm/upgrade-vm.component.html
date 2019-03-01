@@ -1,3 +1,8 @@
-<p>
-  upgrade-vm works!
-</p>
+<section *ngIf="loading">
+  <mat-spinner></mat-spinner>
+</section>
+<section *ngIf="!loading">
+  <p>
+    upgrade-vm works!
+  </p>
+</section>

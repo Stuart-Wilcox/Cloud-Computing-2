@@ -41,7 +41,7 @@ const routes: Routes = [
     canActivate: [AuthGuard],
   },
   {
-    path: 'start-vm',
+    path: 'start-vm/:id',
     component: StartVmComponent,
     canActivate: [AuthGuard],
   },
