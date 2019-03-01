@@ -11,10 +11,18 @@ export class VMService {
 
   async createVM(vm: VM): Promise<VM> {
     // TODO create a VM and return the VM with an id
-    return VM.getBasicInstance('0');
+    return VM.getBasicInstance('0', '');
   }
 
   async deleteVM(vm: VM): Promise<any> {
     // TODO delete the VM
+  }
+
+  async getVMs(): Promise<VM[]> {
+    return [ VM.getBasicInstance('0', 'MyApp1'), VM.getLargeInstance('0', 'MyApp2'), VM.getUltraLargeInstance('0', 'MyApp3')];
+  }
+
+  async getVM(id: string): Promise<VM> {
+    return VM.getBasicInstance('0', 'MyApp1');
   }
 }

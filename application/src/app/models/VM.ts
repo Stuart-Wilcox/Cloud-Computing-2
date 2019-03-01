@@ -11,21 +11,22 @@ export class VM {
   constructor(
     public id: string,
     public name: string,
+    public type: string,
     public processorCores,
     public virtualRam,
     public storageSpace,
     public price
   ) {}
 
-  public static getBasicInstance(id: string):VM {
-    return new VM(id, 'Basic', 8, 16, 20, 5);
+  public static getBasicInstance(id: string, name: string):VM {
+    return new VM(id, name, 'Basic', 8, 16, 20, 5);
   }
 
-  public static getLargeInstance(id: string):VM {
-    return new VM(id, 'Large', 32, 64, 20, 10);
+  public static getLargeInstance(id: string, name: string):VM {
+    return new VM(id, name, 'Large', 32, 64, 20, 10);
   }
 
-  public static getUltraLargeInstance(id: string):VM {
-    return new VM(id, 'Ultra Large', 128, 512, 40, 15);
+  public static getUltraLargeInstance(id: string, name: string):VM {
+    return new VM(id, name, 'Ultra Large', 128, 512, 40, 15);
   }
 }

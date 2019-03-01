@@ -1,0 +1,17 @@
+.hoverable:hover {
+  box-shadow: 0px 0px 10px #000;
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+}
+
+.listitem {
+  display: inline-block;
+  height: inherit !important;
+}
+
+.listitemcard {
+  margin-bottom: 10px;
+}

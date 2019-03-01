@@ -3,6 +3,7 @@ import { Routes, RouterModule, CanActivate } from '@angular/router';
 
 import { LoginComponent } from './login/login.component';
 import { DashboardComponent } from './dashboard/dashboard.component';
+import { ViewVmComponent } from './view-vm/view-vm.component';
 import { CreateVmComponent } from './create-vm/create-vm.component';
 import { DeleteVmComponent } from './delete-vm/delete-vm.component';
 import { StartVmComponent } from './start-vm/start-vm.component';
@@ -25,12 +26,17 @@ const routes: Routes = [
     canActivate: [AuthGuard],
   },
   {
+    path: 'view-vm/:id',
+    component: ViewVmComponent,
+    canActivate: [AuthGuard],
+  },
+  {
     path: 'create-vm',
     component: CreateVmComponent,
     canActivate: [AuthGuard],
   },
   {
-    path: 'delete-vm',
+    path: 'delete-vm/:id',
     component: DeleteVmComponent,
     canActivate: [AuthGuard],
   },
@@ -40,17 +46,17 @@ const routes: Routes = [
     canActivate: [AuthGuard],
   },
   {
-    path: 'stop-vm',
+    path: 'stop-vm/:id',
     component: StopVmComponent,
     canActivate: [AuthGuard],
   },
   {
-    path: 'upgrade-vm',
+    path: 'upgrade-vm/:id',
     component: UpgradeVmComponent,
     canActivate: [AuthGuard],
   },
   {
-    path: 'downgrade-vm',
+    path: 'downgrade-vm/:id',
     component: DowngradeVmComponent,
     canActivate: [AuthGuard],
   },

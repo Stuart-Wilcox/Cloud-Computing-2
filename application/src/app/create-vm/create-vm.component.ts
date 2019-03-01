@@ -13,7 +13,7 @@ import { VMService } from '@services/vm.service';
   styleUrls: ['./create-vm.component.css']
 })
 export class CreateVmComponent implements OnInit {
-  private vms = [ VM.getBasicInstance('0'), VM.getLargeInstance('0'), VM.getUltraLargeInstance('0')];
+  private vms = [ VM.getBasicInstance('0', ''), VM.getLargeInstance('0', ''), VM.getUltraLargeInstance('0', '')];
 
   constructor(public vmService: VMService, private snackBar: MatSnackBar, private router: Router) { }
 
