@@ -19,7 +19,7 @@
       </a>
     </mat-list-item>
     <mat-list-item *ngFor="let vm of vms" class="listitem">
-      <a [routerLink]="['/view-vm', vm.id]" style="text-decoration:none;">
+      <a [routerLink]="['/view-vm', vm._id]" style="text-decoration:none;">
       <mat-card class="hoverable listitemcard">
         <mat-card-header>
           <mat-card-title>{{vm.name}}</mat-card-title>

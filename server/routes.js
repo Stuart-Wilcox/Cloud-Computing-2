@@ -2,14 +2,18 @@ const {auth} = require('./auth');
 const VM = require('./VM');
 
 module.exports = (router) => {
-  router.get('/authenticated', auth, (req, res) => {
-    return res.send('Success');
-  });
-
   router.get('/usage', auth, (req, res) => {
     let id = req.query['id'];
 
-    res.send('usage works!')
+    // TODO implement usage. Calculate the previous events for the VM and figure it out
+    res.send('usage works!');
+  });
+
+  router.post('/usage', auth, (req, res) => {
+    let id = req.query['id'];
+
+    // TODO implement. save the given event
+    res.send('usage works!');
   });
 
   router.get('/vm', auth, (req, res) => {
@@ -65,7 +69,7 @@ module.exports = (router) => {
     });
   });
 
-  router.post('/vm/upgrade', auth, (req, req) => {
+  router.post('/vm/upgrade', auth, (req, res) => {
     let id = req.body.id;
 
     if(!id){

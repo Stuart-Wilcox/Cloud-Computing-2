@@ -9,7 +9,7 @@ export class VM {
   public status: string; // running, stopped
 
   constructor(
-    public id: string,
+    public _id: string,
     public name: string,
     public type: string,
     public processorCores,

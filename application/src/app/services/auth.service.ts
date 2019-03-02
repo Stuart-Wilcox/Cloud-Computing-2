@@ -44,15 +44,9 @@ export class AuthService {
     });
   }
 
-  public getHttpOptions(){
-    return getHttpOptions(this.accessToken);
+  public getHttpHeaders(): HttpHeaders {
+    return new HttpHeaders({
+      'x-access-token': this.accessToken,
+    });
   }
 }
-
-const getHttpOptions = (token) => {
-  return {
-    headers: new HttpHeaders({
-    'x-access-token': token,
-    }),
-  };
-};

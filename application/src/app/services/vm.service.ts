@@ -9,32 +9,33 @@ import { VM } from '@models/VM';
 })
 export class VMService {
 
-  constructor(private http: HttpClient, private authService: AuthService) { }
+  constructor(private http: HttpClient, private auth: AuthService) { }
 
   async createVM(vm: VM): Promise<VM> {
-    // TODO create a VM and return the VM with an id
-    // this.http.post('/api/')
-    return VM.getBasicInstance('0', '');
+    return this
+      .http
+      .post<VM>('/api/vm', vm, {headers: this.auth.getHttpHeaders()})
+      .toPromise();
   }
 
-  async deleteVM(vm: VM): Promise<any> {
-    // TODO delete the VM
+  async deleteVM(id: string): Promise<any> {
+    return this
+      .http
+      .delete(`/api/vm?id=${id}`, {headers:this.auth.getHttpHeaders()})
+      .toPromise();
   }
 
   async getVMs(): Promise<VM[]> {
-    return new Promise((res, rej) => {
-      setTimeout(() => {
-        res([ VM.getBasicInstance('0', 'MyApp1'), VM.getLargeInstance('0', 'MyApp2'), VM.getUltraLargeInstance('0', 'MyApp3')]);
-      }, 3000);
-    });
+    return this
+      .http
+      .get<VM[]>('/api/vm', {headers:this.auth.getHttpHeaders()})
+      .toPromise();
   }
 
   async getVM(id: string): Promise<VM> {
-    return new Promise((res, rej) => {
-      setTimeout(() => {
-        res(VM.getLargeInstance('0', 'MyApp2'))
-      }, 3000);
-    })
-    // return VM.getBasicInstance('0', 'MyApp1');
+    return this
+      .http
+      .get<VM>(`/api/vm?id=${id}`, {headers: this.auth.getHttpHeaders()})
+      .toPromise();
   }
 }
