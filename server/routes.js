@@ -71,6 +71,36 @@ module.exports = (router) => {
     if(!id){
       return res.status(400).send('Id required');
     }
+
+    VM.findById(id)
+    .then((vm, err) => {
+      if(err || !vm) throw new Error('VM not found');
+      if(vm.type == 'Ultra Large') return res.send('Can\'t upgrade beyond Ultra Large');
+
+      if(vm.type == 'Large'){
+        vm.type = 'Ultra Large';
+        vm.processorCores = 128;
+        vm.virtualRam = 512;
+        vm.storageSpace = 40;
+        vm.price = 15;
+      }
+      else {
+        vm.type = 'Large';
+        vm.processorCores = 32;
+        vm.virtualRam = 64;
+        vm.storageSpace = 20;
+        vm.price = 10;
+      }
+
+      return vm.save();
+    })
+    .then(vm => {
+      return res.json(vm);
+    })
+    .catch(err => {
+      console.error(err);
+      res.status(500).send(err);
+    })
   });
 
   router.post('/vm/downgrade', auth, (req, res) => {
@@ -79,6 +109,36 @@ module.exports = (router) => {
     if(!id){
       return res.status(400).send('Id required');
     }
+
+    VM.findById(id)
+    .then((vm, err) => {
+      if(err || !vm) throw new Error('VM not found');
+      if(vm.type == 'Basic') return res.send('Can\'t downgrade beyond Basic');
+
+      if(vm.type == 'Large'){
+        vm.type = 'Basic';
+        vm.processorCores = 8;
+        vm.virtualRam = 16;
+        vm.storageSpace = 20;
+        vm.price = 5;
+      }
+      else {
+        vm.type = 'Large';
+        vm.processorCores = 32;
+        vm.virtualRam = 64;
+        vm.storageSpace = 20;
+        vm.price = 10;
+      }
+
+      return vm.save();
+    })
+    .then(vm => {
+      return res.json(vm);
+    })
+    .catch(err => {
+      console.error(err);
+      return res.status(404).send(err);
+    })
   });
 
   router.delete('/vm', auth, (req, res) => {
