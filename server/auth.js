@@ -6,7 +6,7 @@ const User = require('./User');
 
 module.exports = {
   auth: (req, res, next) => {
-    let token = req.cookies['x-access-token'];
+    let token = req.headers['x-access-token'];
 
     decodeToken(token).then(username => {
       return User.find({username}).exec();
@@ -21,20 +21,24 @@ module.exports = {
   login: (req, res) => {
     let username = req.body['username'];
     let password = req.body['password'];
+    let foundUsername = null;
 
     // lookup username hash
-    User.find({username}).exec().then((err, user) => {
+    User.find({username}).exec().then((user, err) => {
+      user = user ? user[0] : null;
       if(err || !user) throw new Error('User Not Found');
-      return user.password;
-    }).then(hashedPassword => {
-      return doesMatch(password, hashedPassword);
+      foundUsername = user.username;
+      return user;
+    }).then(user => {
+      return doesMatch(password, user.password);
     }).then(success => {
       if(!success) throw new Error('Incorrect Password');
-      return encodeToken(user.username);
+      return encodeToken(foundUsername);
     }).then(token => {
-      return res.set('Set-Cookie', `x-access-token=${token};SameSite=Strict`).send('Success');
+      return res.set('Set-Cookie', `x-access-token=${token};SameSite=Strict`).json({token});
     }).catch(err => {
-      return res.status(401).send(err);
+      console.error(err);
+      return res.status(401).send(err.message);
     });
   },
   register: (req, res) => {

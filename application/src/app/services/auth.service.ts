@@ -1,14 +1,53 @@
 import { Injectable } from '@angular/core';
+import { HttpClient,  HttpHeaders } from '@angular/common/http';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
+  public isAuthenticated: boolean;
+  private accessToken: string;
 
-  constructor() { }
+  constructor(private http: HttpClient) {
+    this.isAuthenticated = false;
+    this.accessToken = '';
+  }
 
-  public isAuthenticated(): boolean {
-    // TODO make this work!
-    return true;
+  public async login(username, password): Promise<any> {
+    return this.http
+    .post(`/api/login`, { username, password })
+    .toPromise()
+    .then(response => {
+      if(!response['token']) throw new Error('No token provided');
+      this.isAuthenticated = true;
+      this.accessToken = response['token'];
+      return true;
+    });
+  }
+
+  public async register(username, password): Promise<any> {
+    this.http
+    .post(`/api/register`, { username, password })
+    .toPromise()
+    .then(response => {
+      console.log(response);
+      return response;
+    })
+    .catch(err => {
+      console.error(err);
+      throw err;
+    });
+  }
+
+  public getHttpOptions(){
+    return getHttpOptions(this.accessToken);
   }
 }
+
+const getHttpOptions = (token) => {
+  return {
+    headers: new HttpHeaders({
+    'x-access-token': token,
+    }),
+  };
+};

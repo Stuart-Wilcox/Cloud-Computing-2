@@ -13,6 +13,10 @@ const router = express.Router();
 app.use(bodyParser.urlencoded({extended:true}));
 app.use(bodyParser.json());
 app.use(cookieParser());
+app.use((req,res,next) => {
+  res.set('Access-Control-Allow-Origin', '*');
+  next();
+});
 
 routes(router);
 app.use('/api', router);
