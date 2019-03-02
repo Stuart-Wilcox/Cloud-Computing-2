@@ -19,6 +19,7 @@ export class CreateVmComponent implements OnInit {
 
   optionSelected(index){
     this.vmService.createVM(this.vms[index]).then(vm => {
+      return;
       let ref = this.snackBar.open('Sucessfully created VM', 'Visit', { duration: 3000 });
 
       ref.afterDismissed().subscribe(()=> {

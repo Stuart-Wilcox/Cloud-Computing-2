@@ -1,5 +1,7 @@
 import { Injectable } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
 
+import { AuthService } from '@services/auth.service';
 import { VM } from '@models/VM';
 
 @Injectable({
@@ -7,10 +9,11 @@ import { VM } from '@models/VM';
 })
 export class VMService {
 
-  constructor() { }
+  constructor(private http: HttpClient, private authService: AuthService) { }
 
   async createVM(vm: VM): Promise<VM> {
     // TODO create a VM and return the VM with an id
+    // this.http.post('/api/')
     return VM.getBasicInstance('0', '');
   }
 

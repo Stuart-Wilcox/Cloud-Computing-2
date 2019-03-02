@@ -10,7 +10,12 @@ export class AuthService {
 
   constructor(private http: HttpClient) {
     this.isAuthenticated = false;
-    this.accessToken = '';
+    this.accessToken = null;
+  }
+
+  public async logout(): Promise<any> {
+    this.isAuthenticated = false;
+    this.accessToken = null;
   }
 
   public async login(username, password): Promise<any> {

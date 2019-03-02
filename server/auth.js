@@ -10,11 +10,12 @@ module.exports = {
 
     decodeToken(token).then(username => {
       return User.find({username}).exec();
-    }).then((err, user) => {
-      if(err || !user) throw new Error('Invalid token');
-      req.user = user;
+    }).then((user, err) => {
+      if(err || !user || user.length==0) throw new Error('Invalid token');
+      req.user = user[0];
       return next()
     }).catch(err => {
+      console.error(err);
       res.status(401).send(err);
     });
   },
