@@ -2,7 +2,7 @@ const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 const JWTSECRET = 'mySuperSpecialSecret12345';
 
-const User = require('./User');
+const User = require('./models/User');
 
 module.exports = {
   auth: (req, res, next) => {
