@@ -11,13 +11,15 @@ import { VM } from '@models/VM';
   styleUrls: ['./upgrade-vm.component.css']
 })
 export class UpgradeVmComponent implements OnInit {
-  private vm: VM;
-  public id: string;
   public loading: boolean;
+  public error: Error;
+  public id: string;
+  private vm: VM;
 
   constructor(private route: ActivatedRoute, public vmService: VMService) {
     this.id = '';
     this.vm = null;
+    this.error = null;
   }
 
   ngOnInit() {
@@ -27,7 +29,21 @@ export class UpgradeVmComponent implements OnInit {
       this.vmService.getVM(this.id).then(vm => {
         this.vm = vm
         this.loading = false;
+      }).catch(err => {
+        this.loading = false;
+        this.error = err;
       });
+    });
+  }
+
+  upgradeVM(){
+    this.loading = true;
+    this.vmService.upgradeVM(this.id).then(() => {
+      this.loading = false;
+      // maybe redirect to url=`/view-vm/${this.id}`
+    }).catch(err => {
+      this.loading = false;
+      this.error = err;
     });
   }
 }

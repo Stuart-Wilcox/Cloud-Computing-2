@@ -20,7 +20,7 @@ export class AuthService {
 
   public async login(username, password): Promise<any> {
     return this.http
-    .post(`/api/login`, { username, password })
+    .post(`/public-api/login`, { username, password })
     .toPromise()
     .then(response => {
       if(!response['token']) throw new Error('No token provided');
@@ -32,7 +32,7 @@ export class AuthService {
 
   public async register(username, password): Promise<any> {
     this.http
-    .post(`/api/register`, { username, password })
+    .post(`/public-api/register`, { username, password })
     .toPromise()
     .then(response => {
       console.log(response);

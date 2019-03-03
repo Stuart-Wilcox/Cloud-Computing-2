@@ -22,26 +22,26 @@
         </mat-list-item>
       </mat-list>
 
-      <a [routerLink]="['/delete-vm', vm.id]">
+      <a [routerLink]="['/delete-vm', vm._id]">
         <button mat-raised-button color="warn">Delete</button>
       </a>
-      <a [routerLink]="['/upgrade-vm', vm.id]">
+      <a [routerLink]="['/upgrade-vm', vm._id]">
         <button *ngIf="vm.type != 'Ultra Large'" mat-raised-button color="primary">Upgrade</button>
       </a>
       <button *ngIf="vm.type == 'Ultra Large'" mat-raised-button color="primary" disabled>Upgrade</button>
-      <a [routerLink]="['/downgrade-vm', vm.id]">
+      <a [routerLink]="['/downgrade-vm', vm._id]">
         <button *ngIf="vm.type != 'Basic'" mat-raised-button color="accent">Downgrade</button>
       </a>
       <button *ngIf="vm.type == 'Basic'" mat-raised-button color="accent" disabled>Downgrade</button>
 
-      <a [routerLink]="['/start-vm', vm.id]">
+      <a [routerLink]="['/start-vm', vm._id]">
         <button *ngIf="vm.status=='stopped'" mat-stroked-button color="primary">Start</button>
       </a>
-      <a [routerLink]="['/stop-vm', vm.id]">
+      <a [routerLink]="['/stop-vm', vm._id]">
         <button *ngIf="vm.status=='running'" mat-stroked-button color="warn">Stop</button>
       </a>
 
-      <a [routerLink]="['/usage', vm.id]">
+      <a [routerLink]="['/usage', vm._id]">
         <button mat-raised-button>Usage</button>
       </a>
     </mat-card-content>

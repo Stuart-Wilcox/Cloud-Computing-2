@@ -1,59 +1,7 @@
-<h1>Create VM</h1>
-<mat-horizontal-stepper [linear]="true">
-  <mat-step label="VM Type">
-    <mat-list class="optionList">
-      <mat-list-item *ngFor="let vm of vms; index as i" class="optionListItem">
-        <mat-card class="optionCard" (click)="optionSelected(i)">
-          <mat-card-header>
-            <mat-card-title>{{vm.name}} Virtual Service Instance</mat-card-title>
-          </mat-card-header>
-          <mat-card-content>
-            <mat-list>
-              <mat-list-item>
-                <p>Processor Cores: {{vm.processorCores}}<p>
-              </mat-list-item>
-              <mat-list-item>
-                <p>Virtual RAM: {{vm.virtualRam}}GB<p>
-              </mat-list-item>
-              <mat-list-item>
-                <p>Storage Space: {{vm.storageSpace}}GB<p>
-              </mat-list-item>
-              <mat-list-item>
-                <p>Price: {{vm.price}} cents per minute<p>
-              </mat-list-item>
-            </mat-list>
-          </mat-card-content>
-        </mat-card>
-      </mat-list-item>
-    </mat-list>
-  </mat-step>
-  <mat-step label="VM Name">
-    <mat-form-field>
-      <input matInput placeholder="VM Name" [(ngModel)]="name" />
-    </mat-form-field>
-  </mat-step>
-  <mat-step label="Review">
-    <mat-card *ngIf="vm">
-      <mat-card-header>
-        <mat-card-title>{{vm.name}}</mat-card-title>
-        <mat-card-subtitle>{{vm.type}} Virtual Service Instance</mat-card-subtitle>
-      </mat-card-header>
-      <mat-card-content>
-        <mat-list>
-          <mat-list-item>
-            <p>Processor Cores: {{vm.processorCores}}<p>
-          </mat-list-item>
-          <mat-list-item>
-            <p>Virtual RAM: {{vm.virtualRam}}GB<p>
-          </mat-list-item>
-          <mat-list-item>
-            <p>Storage Space: {{vm.storageSpace}}GB<p>
-          </mat-list-item>
-          <mat-list-item>
-            <p>Price: {{vm.price}} cents per minute<p>
-          </mat-list-item>
-        </mat-list>
-      </mat-card-content>
-    </mat-card>
-  </mat-step>
-</mat-horizontal-stepper>
+<section *ngIf="loading">
+  <mat-spinner></mat-spinner>
+</section>
+<section *ngIf="!loading">
+  <!-- Display "this.vms" options here, get a name and type to create new vm for the user -->
+  <p>create-vm works!</p>
+</section>

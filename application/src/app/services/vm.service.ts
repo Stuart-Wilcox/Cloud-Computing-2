@@ -11,17 +11,10 @@ export class VMService {
 
   constructor(private http: HttpClient, private auth: AuthService) { }
 
-  async createVM(vm: VM): Promise<VM> {
+  async getOfferings(): Promise<VM[]> {
     return this
       .http
-      .post<VM>('/api/vm', vm, {headers: this.auth.getHttpHeaders()})
-      .toPromise();
-  }
-
-  async deleteVM(id: string): Promise<any> {
-    return this
-      .http
-      .delete(`/api/vm?id=${id}`, {headers:this.auth.getHttpHeaders()})
+      .get<VM[]>('/api/vm/offerings', {headers: this.auth.getHttpHeaders()})
       .toPromise();
   }
 
@@ -36,6 +29,48 @@ export class VMService {
     return this
       .http
       .get<VM>(`/api/vm?id=${id}`, {headers: this.auth.getHttpHeaders()})
+      .toPromise();
+  }
+
+  async createVM(name: string, type: string): Promise<VM> {
+    return this
+      .http
+      .post<VM>('/api/vm', { name, type }, {headers: this.auth.getHttpHeaders()})
+      .toPromise();
+  }
+
+  async deleteVM(id: string): Promise<any> {
+    return this
+      .http
+      .delete<any>(`/api/vm?id=${id}`, {headers: this.auth.getHttpHeaders()})
+      .toPromise();
+  }
+
+  async upgradeVM(id: string): Promise<any> {
+    return this
+      .http
+      .post<any>(`/api/vm/upgrade?id=${id}`, {}, {headers: this.auth.getHttpHeaders()})
+      .toPromise();
+  }
+
+  async downgradeVM(id: string): Promise<any> {
+    return this
+      .http
+      .post<any>(`/api/vm/downgrade?id=${id}`, {}, {headers: this.auth.getHttpHeaders()})
+      .toPromise();
+  }
+
+  async startVM(id: string): Promise<any> {
+    return this
+      .http
+      .post<any>(`/api/vm/start?id=${id}`, {}, {headers: this.auth.getHttpHeaders()})
+      .toPromise();
+  }
+
+  async stopVM(id: string): Promise<any> {
+    return this
+      .http
+      .post<any>(`api/vm/stop?id=${id}`, {}, {headers: this.auth.getHttpHeaders()})
       .toPromise();
   }
 }

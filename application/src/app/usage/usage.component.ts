@@ -10,13 +10,15 @@ import { UsageService } from '@services/usage.service';
   styleUrls: ['./usage.component.css']
 })
 export class UsageComponent implements OnInit {
-  private usage: any;
-  public id: string;
   public loading: boolean;
+  public error: Error;
+  public id: string;
+  private usage: any;
 
   constructor(private route: ActivatedRoute, public usageService: UsageService) {
     this.id = '';
     this.usage = null;
+    this.error = null;
   }
 
   ngOnInit() {
@@ -26,6 +28,9 @@ export class UsageComponent implements OnInit {
       this.usageService.getUsage(this.id).then(usage => {
         this.usage = usage;
         this.loading = false;
+      }).catch(err => {
+        this.loading = false;
+        this.error = err;
       });
     });
   }

@@ -1,6 +1,16 @@
 const VM = require('../models/VM');
 
 module.exports = (router) => {
+  router.get('/vm/offerings', (req, res) => {
+    let offerings = [
+      VM.getBasicInstance(),
+      VM.getLargeInstance(),
+      VM.getUltraLargeInstance(),
+    ];
+
+    return res.json(offerings);
+  });
+
   router.get('/vm', (req, res) => {
     let id = req.query['id'];
 
@@ -29,21 +39,17 @@ module.exports = (router) => {
   });
 
   router.post('/vm', (req, res) => {
-    let { name, type, processorCores, virtualRam, storageSpace, price } = req.body;
+    let { name, type } = body;
 
-    if(!name || !type || !processorCores || !virtualRam || !storageSpace || !price) {
-      return res.status(400).send('All fields must be specified');
+    if(!name || !type) {
+      return res.status(400).send('fields \'name\' and \'type\' are required');
     }
 
-    let vm = new VM({
-      user: req.user._id,
-      name,
-      type,
-      processorCores,
-      virtualRam,
-      storageSpace,
-      price,
-    });
+    let vm = VM.getInstance(req.user._id, name, type)
+
+    if(!vm){
+      return res.status(400).send('field \'type\' must be one of "Basic", "Large", "Ultra Large"');
+    }
 
     vm.save()
     .then(vm => {
@@ -54,8 +60,26 @@ module.exports = (router) => {
     });
   });
 
+  router.delete('/vm', (req, res) => {
+    let id = req.query['id'];
+
+    if (!id) {
+      return res.status(400).send('Id required');
+    }
+
+    VM.findByIdAndDelete(id).exec()
+    .then((vm, err) => {
+      if(!vm || err) throw new Error('Unable to delete');
+      res.send('Success');
+    })
+    .catch(err => {
+      console.error(err);
+      return res.status(404).send(err);
+    });
+  });
+
   router.post('/vm/upgrade', (req, res) => {
-    let id = req.body.id;
+    let id = req.query['id'];
 
     if(!id){
       return res.status(400).send('Id required');
@@ -93,7 +117,7 @@ module.exports = (router) => {
   });
 
   router.post('/vm/downgrade', (req, res) => {
-    let id = req.body.id;
+    let id = req.query['id'];
 
     if(!id){
       return res.status(400).send('Id required');
@@ -130,21 +154,25 @@ module.exports = (router) => {
     })
   });
 
-  router.delete('/vm', (req, res) => {
+  router.post('/vm/start', (req, res) => {
     let id = req.query['id'];
 
-    if (!id) {
+    if(!id){
       return res.status(400).send('Id required');
     }
 
-    VM.findByIdAndDelete(id).exec()
-    .then((vm, err) => {
-      if(!vm || err) throw new Error('Unable to delete');
-      res.send('Success');
-    })
-    .catch(err => {
-      console.error(err);
-      return res.status(404).send(err);
-    });
+    // TODO implement this
+    res.send('Success');
+  });
+
+  router.post('/vm/stop', (req, res) => {
+    let id = req.query['id'];
+
+    if(!id){
+      return res.status(400).send('Id required');
+    }
+
+    // TODO implement this
+    res.send('Success');
   });
 };

@@ -1,10 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
-import {MatStepperModule} from '@angular/material/stepper';
-import { MatCardModule } from '@angular/material/card';
-import { MatListModule } from '@angular/material/list';
-import { MatInputModule } from '@angular/material/input';
-import { MatSnackBar } from '@angular/material';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 import { VM } from '@models/VM';
 import { VMService } from '@services/vm.service';
@@ -15,25 +10,33 @@ import { VMService } from '@services/vm.service';
   styleUrls: ['./create-vm.component.css']
 })
 export class CreateVmComponent implements OnInit {
-  private vms = [ VM.getBasicInstance('0', ''), VM.getLargeInstance('0', ''), VM.getUltraLargeInstance('0', '')];
+  public loading: boolean;
+  public error: Error;
   public name: string;
-  public vm: VM;
+  public type: string;
+  private vms: VM[];
 
-  constructor(public vmService: VMService, private snackBar: MatSnackBar, private router: Router) { }
-
-  optionSelected(index){
-
-    this.vmService.createVM(this.vms[index]).then(vm => {
-      return;
-      let ref = this.snackBar.open('Sucessfully created VM', 'Visit', { duration: 3000 });
-
-      ref.afterDismissed().subscribe(()=> {
-        // TODO change this to the VM instance location
-        this.router.navigate(['/dashboard']);
-      });
-    });
+  constructor(public vmService: VMService) {
+    this.vms = [];
+    this.error = null;
   }
 
   ngOnInit() {
+    this.loading = true;
+    this.vmService.getOfferings().then(vms => {
+      this.loading = false;
+      this.vms = vms;
+    });
+  }
+
+  createVM(){
+    this.loading = true;
+    this.vmService.createVM(this.name, this.type).then(vm => {
+      this.loading = false;
+      // re-route to viewing the vm if you want to here, url=`/view-vm/${vm._id}`
+    }).catch(err => {
+      this.loading = false;
+      this.error = err;
+    });
   }
 }

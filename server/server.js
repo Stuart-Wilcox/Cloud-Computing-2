@@ -20,7 +20,7 @@ app.use((req,res,next) => {
 
 routes(router);
 app.use('/api', router);
-app.post('/api/login', login);
-app.post('/api/register', register);
+app.post('/public-api/login', login);
+app.post('/public-api/register', register);
 
 app.listen(port, host, () => console.log(`Listening at ${host}:${port}`));
