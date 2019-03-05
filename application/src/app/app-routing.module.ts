@@ -12,6 +12,8 @@ import { UpgradeVmComponent } from './upgrade-vm/upgrade-vm.component';
 import { DowngradeVmComponent } from './downgrade-vm/downgrade-vm.component';
 import { UsageComponent } from './usage/usage.component';
 import { ChargesComponent } from './charges/charges.component';
+import {RegisterComponent} from './register/register.component';
+
 
 import { AuthGuardService as AuthGuard} from './services/auth-guard.service';
 
@@ -19,6 +21,10 @@ const routes: Routes = [
   {
     path: '',
     component: LoginComponent,
+  },
+  {
+    path: 'register',
+    component: RegisterComponent,
   },
   {
     path: 'dashboard',

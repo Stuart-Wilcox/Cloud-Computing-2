@@ -1,11 +1,8 @@
-.center{
-    text-align: center;
-}
-span{
-    padding-left: 10px;
-}
 .maxWidth{
     max-width: 400px;
     margin-left: auto;
     margin-right: auto;
+}
+.center{
+    text-align: center;
 }

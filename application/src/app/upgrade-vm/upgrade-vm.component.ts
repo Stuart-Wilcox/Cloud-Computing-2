@@ -27,7 +27,7 @@ export class UpgradeVmComponent implements OnInit {
     this.route.params.subscribe(params => {
       this.id = params['id'];
       this.vmService.getVM(this.id).then(vm => {
-        this.vm = vm
+        this.vm = vm;
         this.loading = false;
       }).catch(err => {
         this.loading = false;
@@ -36,7 +36,7 @@ export class UpgradeVmComponent implements OnInit {
     });
   }
 
-  upgradeVM(){
+  upgradeVM() {
     this.loading = true;
     this.vmService.upgradeVM(this.id).then(() => {
       this.loading = false;

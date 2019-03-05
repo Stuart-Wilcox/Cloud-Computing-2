@@ -23,7 +23,7 @@ export class AuthService {
     .post(`/public-api/login`, { username, password })
     .toPromise()
     .then(response => {
-      if(!response['token']) throw new Error('No token provided');
+      if (!response['token']) { throw new Error('No token provided'); }
       this.isAuthenticated = true;
       this.accessToken = response['token'];
       return true;

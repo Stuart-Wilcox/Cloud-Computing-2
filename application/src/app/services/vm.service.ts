@@ -21,7 +21,7 @@ export class VMService {
   async getVMs(): Promise<VM[]> {
     return this
       .http
-      .get<VM[]>('/api/vm', {headers:this.auth.getHttpHeaders()})
+      .get<VM[]>('/api/vm', {headers: this.auth.getHttpHeaders()})
       .toPromise();
   }
 

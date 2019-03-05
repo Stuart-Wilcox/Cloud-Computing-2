@@ -18,6 +18,8 @@ import { DowngradeVmComponent } from './downgrade-vm/downgrade-vm.component';
 import { ChargesComponent } from './charges/charges.component';
 import { UsageComponent } from './usage/usage.component';
 import { ViewVmComponent } from './view-vm/view-vm.component';
+import { RegisterComponent } from './register/register.component';
+import { NavbarComponent } from './navbar/navbar.component';
 
 @NgModule({
   declarations: [
@@ -32,7 +34,9 @@ import { ViewVmComponent } from './view-vm/view-vm.component';
     DowngradeVmComponent,
     ChargesComponent,
     UsageComponent,
-    ViewVmComponent
+    ViewVmComponent,
+    RegisterComponent,
+    NavbarComponent
   ],
   imports: [
     BrowserModule,

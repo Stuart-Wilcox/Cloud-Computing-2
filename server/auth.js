@@ -56,7 +56,7 @@ module.exports = {
       if(!user) throw new Error('Failed to save');
       return encodeToken(user.username);
     }).then(token => {
-      return res.set('Set-Cookie', `x-access-token=${token};SameSite=Strict`).send('Success');
+      return res.set('Set-Cookie', `x-access-token=${token};SameSite=Strict`).json({});
     }).catch(err => {
       console.error(err);
       return res.status(400).send(err);
