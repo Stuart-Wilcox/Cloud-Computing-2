@@ -86,9 +86,9 @@ module.exports = (router) => {
       return res.status(400).send('Id required');
     }
 
-    VM.findById(id)
-    .then((vm, err) => {
-      if(err || !vm) throw new Error('VM not found');
+    async function doProcessing(){
+      let vm = await VM.findById(id);
+      if(!vm) throw new Error('VM not found');
       if(vm.type == 'Ultra Large') return res.send('Can\'t upgrade beyond Ultra Large');
 
       if(vm.type == 'Large'){
@@ -106,15 +106,23 @@ module.exports = (router) => {
         vm.price = 10;
       }
 
-      return vm.save();
-    })
-    .then(vm => {
+      let events = await Event.find({ vm: id }).sort('-start').exec();
+      const event = events[0];
+      event.end = Date.now();
+      await event.save();
+
+      const upgradeEvent = Event.createEvent(id, vm.type);
+      await upgradeEvent.save();
+
+      return await vm.save();
+    }
+
+    doProcessing().then(vm => {
       return res.json(vm);
-    })
-    .catch(err => {
+    }).catch(err => {
       console.error(err);
-      res.status(500).send(err);
-    })
+      return res.status(500).send(err);
+    });
   });
 
   router.post('/vm/downgrade', (req, res) => {
@@ -124,9 +132,10 @@ module.exports = (router) => {
       return res.status(400).send('Id required');
     }
 
-    VM.findById(id)
-    .then((vm, err) => {
-      if(err || !vm) throw new Error('VM not found');
+    async function doDowngrade() {
+      let vm = await VM.findById(id);
+      if(!vm) throw new Error('VM not found');
+
       if(vm.type == 'Basic') return res.send('Can\'t downgrade beyond Basic');
 
       if(vm.type == 'Large'){
@@ -144,8 +153,18 @@ module.exports = (router) => {
         vm.price = 10;
       }
 
-      return vm.save();
-    })
+      let events = await Event.find({ vm: id }).sort('-start').exec();
+      const event = events[0];
+      event.end = Date.now();
+      await event.save();
+
+      const downgradeEvent = Event.createEvent(id, vm.type);
+      await downgradeEvent.save();
+
+      return await vm.save();
+    }
+
+    doDowngrade()
     .then(vm => {
       return res.json(vm);
     })
@@ -162,11 +181,21 @@ module.exports = (router) => {
       return res.status(400).send('VM Id required');
     }
 
-    VM.findById(id).then(vm => {
-      const event = Event.createEvent(id, vm.type);
-      return event.save();
-    })
-    .then(event => {
+    async function startVM() {
+      const vm = await VM.findById(id);
+      const events = await Event.find({ vm: id }).sort('-start').exec();
+      const lastEvent = events[0];
+
+      // Check to make sure VM is not running; `end` is not supposed to have a value
+      if(lastEvent && !lastEvent.end) {
+        return res.status(400).send('VM already running');
+      } else {
+        const event = Event.createEvent(id, vm.type);
+        return await event.save();
+      }
+    }
+
+    startVM().then(event => {
       return res.json(event);
     })
     .catch(err => {
@@ -182,15 +211,19 @@ module.exports = (router) => {
       return res.status(400).send('VM Id required');
     }
 
-    Event.find({ vm: id }).sort('-start').exec()
-      .then(events => {
-        console.log(events);
-        // Events are sorted by most recent one, so the most
-        // recent one needs to be stopped
-        const lastEvent = events[0];
+    async function stopVM() {
+      const events = await Event.find({ vm: id }).sort('-start').exec();
+      const lastEvent = events[0];
+
+      if(lastEvent && lastEvent.end) {
+        return res.status(400).send('VM already running');
+      } else {
         lastEvent.end = Date.now();
-        return lastEvent.save();
-      })
+        return await lastEvent.save();
+      }
+    }
+
+    stopVM()
       .then(event => {
         return res.json(event);
       })
