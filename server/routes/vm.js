@@ -39,7 +39,7 @@ module.exports = (router) => {
   });
 
   router.post('/vm', (req, res) => {
-    let { name, type } = body;
+    let { name, type } = req.body;
 
     if(!name || !type) {
       return res.status(400).send('fields \'name\' and \'type\' are required');

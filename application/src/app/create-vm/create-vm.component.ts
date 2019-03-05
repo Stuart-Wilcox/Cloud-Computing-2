@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import {MatSnackBar} from '@angular/material';
 
 import { VM } from '@models/VM';
 import { VMService } from '@services/vm.service';
@@ -16,7 +17,7 @@ export class CreateVmComponent implements OnInit {
   public type: string;
   private vms: VM[];
 
-  constructor(public vmService: VMService) {
+  constructor(public vmService: VMService, private snackBar: MatSnackBar) {
     this.vms = [];
     this.error = null;
   }
@@ -30,13 +31,19 @@ export class CreateVmComponent implements OnInit {
   }
 
   createVM(){
-    this.loading = true;
-    this.vmService.createVM(this.name, this.type).then(vm => {
-      this.loading = false;
-      // re-route to viewing the vm if you want to here, url=`/view-vm/${vm._id}`
-    }).catch(err => {
-      this.loading = false;
-      this.error = err;
-    });
+    if(this.name && this.type){
+      this.loading = true;
+      this.vmService.createVM(this.name, this.type).then(vm => {
+        this.loading = false;
+        this.snackBar.open("VM Created Successfully.", '', {duration: 500});
+        this.name = null;
+        this.type = null;
+      }).catch(err => {
+        this.loading = false;
+        this.error = err;
+      });
+    } else {
+      this.snackBar.open("Ensure all the fields are filled.", '', {duration: 500});
+    }
   }
 }
