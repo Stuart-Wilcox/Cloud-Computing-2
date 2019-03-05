@@ -1,4 +1,5 @@
 const VM = require('../models/VM');
+const Event = require('../models/Event');
 
 module.exports = (router) => {
   router.get('/vm/offerings', (req, res) => {
@@ -158,21 +159,61 @@ module.exports = (router) => {
     let id = req.query['id'];
 
     if(!id){
-      return res.status(400).send('Id required');
+      return res.status(400).send('VM Id required');
     }
 
-    // TODO implement this
-    res.send('Success');
+    VM.findById(id).then(vm => {
+      const event = Event.createEvent(id, vm.type);
+      return event.save();
+    })
+    .then(event => {
+      return res.json(event);
+    })
+    .catch(err => {
+      console.log(err);
+      return res.status(500).send(err);
+    });
   });
 
   router.post('/vm/stop', (req, res) => {
     let id = req.query['id'];
 
     if(!id){
-      return res.status(400).send('Id required');
+      return res.status(400).send('VM Id required');
     }
 
-    // TODO implement this
-    res.send('Success');
+    Event.find({ vm: id }).sort('-start').exec()
+      .then(events => {
+        console.log(events);
+        // Events are sorted by most recent one, so the most
+        // recent one needs to be stopped
+        const lastEvent = events[0];
+        lastEvent.end = Date.now();
+        return lastEvent.save();
+      })
+      .then(event => {
+        return res.json(event);
+      })
+      .catch(err => {
+        console.log(err);
+        return res.status(500).send(err);
+      });
+  });
+
+  router.get('/vm/event', (req, res) => {
+    let id = req.query['id'];
+
+    if(!id){
+      return res.status(400).send('VM Id required');
+    }
+
+    Event.find({ vm: id }).sort('-start').exec()
+      .then(events => {
+        return res.json(events);
+      })
+      .catch(err => {
+        console.log(err);
+        return res.status(500).send(err);
+      })
   });
 };
