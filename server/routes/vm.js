@@ -86,7 +86,7 @@ module.exports = (router) => {
       return res.status(400).send('Id required');
     }
 
-    async function doProcessing(){
+    async function upgradeVM(){
       let vm = await VM.findById(id);
       if(!vm) throw new Error('VM not found');
       if(vm.type == 'Ultra Large') return res.send('Can\'t upgrade beyond Ultra Large');
@@ -108,16 +108,21 @@ module.exports = (router) => {
 
       let events = await Event.find({ vm: id }).sort('-start').exec();
       const event = events[0];
-      event.end = Date.now();
-      await event.save();
+      
+      // If VM is still running, we need to add a new event so we can keep
+      // track of the new cost
+      if(event && !event.end) {
+        event.end = Date.now();
+        await event.save();
 
-      const upgradeEvent = Event.createEvent(id, vm.type);
-      await upgradeEvent.save();
+        const upgradeEvent = Event.createEvent(id, vm.type);
+        await upgradeEvent.save();
+      }
 
       return await vm.save();
     }
 
-    doProcessing().then(vm => {
+    upgradeVM().then(vm => {
       return res.json(vm);
     }).catch(err => {
       console.error(err);
@@ -132,7 +137,7 @@ module.exports = (router) => {
       return res.status(400).send('Id required');
     }
 
-    async function doDowngrade() {
+    async function downgradeVM() {
       let vm = await VM.findById(id);
       if(!vm) throw new Error('VM not found');
 
@@ -155,16 +160,21 @@ module.exports = (router) => {
 
       let events = await Event.find({ vm: id }).sort('-start').exec();
       const event = events[0];
-      event.end = Date.now();
-      await event.save();
 
-      const downgradeEvent = Event.createEvent(id, vm.type);
-      await downgradeEvent.save();
+      // If VM is still running, we need to add a new event so we can keep
+      // track of the new cost
+      if(event && !event.end) {
+        event.end = Date.now();
+        await event.save();
+
+        const downgradeEvent = Event.createEvent(id, vm.type);
+        await downgradeEvent.save();
+      }
 
       return await vm.save();
     }
 
-    doDowngrade()
+    downgradeVM()
     .then(vm => {
       return res.json(vm);
     })
