@@ -1,8 +1,27 @@
+
+
 <section *ngIf="loading">
   <mat-spinner></mat-spinner>
 </section>
-<section *ngIf="!loading">
-  <p>
-    usage works!
-  </p>
+<section *ngIf="!loading" class="mainBody">
+	<mat-card *ngIf="vm">
+		<mat-card-header>
+	      <mat-card-title><h1>Usage for {{vm.name}}</h1></mat-card-title> 
+	    </mat-card-header>
+	    <mat-card-content>
+		<mat-divider></mat-divider>
+			<mat-list>
+				<mat-list-item><h2>Plan</h2></mat-list-item>
+				<p>	{{vm.processorCores}} Cores</p>
+				<p>	{{vm.virtualRam}} GB RAM</p>
+				<p>	{{vm.storageSpace}} GB Space</p>
+				<p>	{{vm.price}} cents/min</p>
+				<mat-divider></mat-divider>
+				<mat-list-item><h2>Total</h2></mat-list-item>
+				<p>$ {{usage}} </p>
+
+
+			</mat-list>
+		</mat-card-content>
+	</mat-card>
 </section>
