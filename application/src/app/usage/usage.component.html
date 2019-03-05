@@ -5,23 +5,28 @@
 </section>
 <section *ngIf="!loading" class="mainBody">
 	<mat-card *ngIf="vm">
-		<mat-card-header>
+		<mat-card-header class = "header">
 	      <mat-card-title><h1>Usage for {{vm.name}}</h1></mat-card-title> 
 	    </mat-card-header>
+
 	    <mat-card-content>
 		<mat-divider></mat-divider>
-			<mat-list>
-				<mat-list-item><h2>Plan</h2></mat-list-item>
-				<p>	{{vm.processorCores}} Cores</p>
-				<p>	{{vm.virtualRam}} GB RAM</p>
-				<p>	{{vm.storageSpace}} GB Space</p>
-				<p>	{{vm.price}} cents/min</p>
+			
+				<mat-card-subtitle><h2>Plan</h2></mat-card-subtitle> <!-- Swap these to mat-card-subtitle-->
+				<mat-card-content>
+					<p>	{{vm.processorCores}} Cores</p> <!-- mat-card-content -->
+					<p>	{{vm.virtualRam}} GB RAM</p>
+					<p>	{{vm.storageSpace}} GB Memory</p>
+					<p>	{{vm.price}} ¢/min</p>
+				</mat-card-content>
 				<mat-divider></mat-divider>
-				<mat-list-item><h2>Total</h2></mat-list-item>
-				<p>$ {{usage}} </p>
+				<mat-card-subtitle><h2>Total</h2></mat-card-subtitle>
+				<mat-card-content>
+					<!-- TODO: wire up backend-->
+					<p>$ {{usage}} </p>
+				</mat-card-content>
 
-
-			</mat-list>
+			
 		</mat-card-content>
 	</mat-card>
 </section>
