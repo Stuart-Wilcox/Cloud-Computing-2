@@ -108,7 +108,7 @@ module.exports = (router) => {
 
       let events = await Event.find({ vm: id }).sort('-start').exec();
       const event = events[0];
-      
+
       // If VM is still running, we need to add a new event so we can keep
       // track of the new cost
       if(event && !event.end) {
@@ -258,5 +258,62 @@ module.exports = (router) => {
         console.log(err);
         return res.status(500).send(err);
       })
+  });
+
+  router.get('/vm/usage', (req, res) => {
+    let id = req.query['id'];
+
+    console.log('asdklfj');
+
+    if(!id){
+      return res.status(400).send('VM Id required');
+    }
+
+    function getPrice(event) {
+      switch(event.type) {
+        case 'Basic':
+            return 5;
+        case 'Large':
+            return 10;
+        case 'Ultra Large':
+            return 15;
+        default:
+            return 0;
+      }
+    }
+
+    function getRunningTime(event) {
+      const secondsStarting = event.start.getTime() / 1000;
+      const secondsEnding = event.end.getTime() / 1000;
+
+      const totalTimeSeconds = secondsEnding - secondsStarting;
+
+      if(totalTimeSeconds < 60) {
+          return 1;
+      }
+
+      return ~~(totalTimeSeconds / 60);
+    }
+
+    async function getUsage() {
+      const events = await Event.find({ vm: id }).sort('-start').exec();
+      
+      let totalCost = 0;
+
+      for(let i = 0; i < events.length; ++i) {
+        totalCost += getPrice(events[i]) * getRunningTime(events[i]);
+      }
+
+      return totalCost;
+    }
+
+    getUsage().then((totalCost) => {
+      return res.json({
+        cost: totalCost,
+      });
+    })
+    .catch(err => {
+      return res.status(500).send(err);
+    });
   });
 };
