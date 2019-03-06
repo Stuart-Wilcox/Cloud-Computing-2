@@ -42,6 +42,7 @@ export class CreateVmComponent implements OnInit {
         this.router.navigate(['/dashboard']);
       }).catch(err => {
         this.loading = false;
+        this.snackBar.open("VM Creation Failed.", '', {duration: 1000});
         this.error = err;
       });
     } else {
