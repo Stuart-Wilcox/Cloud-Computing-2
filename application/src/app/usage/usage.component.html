@@ -23,9 +23,8 @@
 				</mat-card-content>
 				<mat-divider></mat-divider>
 				<mat-card-subtitle><h2>Total</h2></mat-card-subtitle>
-				<mat-card-content>
-					<!-- TODO: wire up backend-->
-					<p>$ {{usage}} </p>
+				<mat-card-content *ngIf="usage">
+					<div>$ {{usage.cost}} </div>
 				</mat-card-content>
 
 			

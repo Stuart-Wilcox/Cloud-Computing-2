@@ -40,16 +40,15 @@ export class UsageComponent implements OnInit {
         this.error = err;
       });
 
-      this.usageService.getUsage(this.id).then(usage => {
+      // Using vmService since UsageService doesnt seem to be implemented
+      this.vmService.getUsage(this.id).then(usage => {
         this.usage = usage;
         this.loading = false;
       }).catch(err => {
         this.loading = false;
         this.error = err;
       });
+
     });
-
-
   }
-
 }
