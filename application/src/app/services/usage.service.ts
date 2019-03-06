@@ -14,7 +14,7 @@ export class UsageService {
   async getUsage(id: string): Promise<any> {
     return this
       .http
-      .get<any>(`/usage?id=${id}`, {headers: this.auth.getHttpHeaders()})
+      .get<any>(`/api/vm/usage?id=${id}`, {headers: this.auth.getHttpHeaders()})
       .toPromise();
   }
 

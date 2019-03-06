@@ -11,13 +11,6 @@ export class VMService {
 
   constructor(private http: HttpClient, private auth: AuthService) { }
 
-  async getUsage(id: string): Promise<VM[]> {
-    return this
-      .http
-      .get<VM[]>(`/api/vm/usage?id=${id}`, {headers: this.auth.getHttpHeaders()})
-      .toPromise();
-  }
-
   async getOfferings(): Promise<VM[]> {
     return this
       .http

@@ -41,7 +41,7 @@ export class UsageComponent implements OnInit {
       });
 
       // Using vmService since UsageService doesnt seem to be implemented
-      this.vmService.getUsage(this.id).then(usage => {
+      this.usageService.getUsage(this.id).then(usage => {
         this.usage = usage;
         this.loading = false;
       }).catch(err => {
