@@ -1,4 +1,5 @@
 const VM = require('../models/VM');
+const Event = require('../models/Event');
 
 module.exports = (router) => {
   router.get('/vm/offerings', (req, res) => {
@@ -85,9 +86,9 @@ module.exports = (router) => {
       return res.status(400).send('Id required');
     }
 
-    VM.findById(id)
-    .then((vm, err) => {
-      if(err || !vm) throw new Error('VM not found');
+    async function upgradeVM(){
+      let vm = await VM.findById(id);
+      if(!vm) throw new Error('VM not found');
       if(vm.type == 'Ultra Large') return res.send('Can\'t upgrade beyond Ultra Large');
 
       if(vm.type == 'Large'){
@@ -105,15 +106,28 @@ module.exports = (router) => {
         vm.price = 10;
       }
 
-      return vm.save();
-    })
-    .then(vm => {
+      let events = await Event.find({ vm: id }).sort('-start').exec();
+      const event = events[0];
+
+      // If VM is still running, we need to add a new event so we can keep
+      // track of the new cost
+      if(event && !event.end) {
+        event.end = Date.now();
+        await event.save();
+
+        const upgradeEvent = Event.createEvent(id, vm.type);
+        await upgradeEvent.save();
+      }
+
+      return await vm.save();
+    }
+
+    upgradeVM().then(vm => {
       return res.json(vm);
-    })
-    .catch(err => {
+    }).catch(err => {
       console.error(err);
-      res.status(500).send(err);
-    })
+      return res.status(500).send(err);
+    });
   });
 
   router.post('/vm/downgrade', (req, res) => {
@@ -123,9 +137,10 @@ module.exports = (router) => {
       return res.status(400).send('Id required');
     }
 
-    VM.findById(id)
-    .then((vm, err) => {
-      if(err || !vm) throw new Error('VM not found');
+    async function downgradeVM() {
+      let vm = await VM.findById(id);
+      if(!vm) throw new Error('VM not found');
+
       if(vm.type == 'Basic') return res.send('Can\'t downgrade beyond Basic');
 
       if(vm.type == 'Large'){
@@ -143,8 +158,23 @@ module.exports = (router) => {
         vm.price = 10;
       }
 
-      return vm.save();
-    })
+      let events = await Event.find({ vm: id }).sort('-start').exec();
+      const event = events[0];
+
+      // If VM is still running, we need to add a new event so we can keep
+      // track of the new cost
+      if(event && !event.end) {
+        event.end = Date.now();
+        await event.save();
+
+        const downgradeEvent = Event.createEvent(id, vm.type);
+        await downgradeEvent.save();
+      }
+
+      return await vm.save();
+    }
+
+    downgradeVM()
     .then(vm => {
       return res.json(vm);
     })
@@ -158,21 +188,132 @@ module.exports = (router) => {
     let id = req.query['id'];
 
     if(!id){
-      return res.status(400).send('Id required');
+      return res.status(400).send('VM Id required');
     }
 
-    // TODO implement this
-    res.send('Success');
+    async function startVM() {
+      const vm = await VM.findById(id);
+      const events = await Event.find({ vm: id }).sort('-start').exec();
+      const lastEvent = events[0];
+
+      // Check to make sure VM is not running; `end` is not supposed to have a value
+      if(lastEvent && !lastEvent.end) {
+        return res.status(400).send('VM already running');
+      } else {
+        const event = Event.createEvent(id, vm.type);
+        return await event.save();
+      }
+    }
+
+    startVM().then(event => {
+      return res.json(event);
+    })
+    .catch(err => {
+      console.log(err);
+      return res.status(500).send(err);
+    });
   });
 
   router.post('/vm/stop', (req, res) => {
     let id = req.query['id'];
 
     if(!id){
-      return res.status(400).send('Id required');
+      return res.status(400).send('VM Id required');
     }
 
-    // TODO implement this
-    res.send('Success');
+    async function stopVM() {
+      const events = await Event.find({ vm: id }).sort('-start').exec();
+      const lastEvent = events[0];
+
+      if(lastEvent && lastEvent.end) {
+        return res.status(400).send('VM already running');
+      } else {
+        lastEvent.end = Date.now();
+        return await lastEvent.save();
+      }
+    }
+
+    stopVM()
+      .then(event => {
+        return res.json(event);
+      })
+      .catch(err => {
+        console.log(err);
+        return res.status(500).send(err);
+      });
+  });
+
+  router.get('/vm/event', (req, res) => {
+    let id = req.query['id'];
+
+    if(!id){
+      return res.status(400).send('VM Id required');
+    }
+
+    Event.find({ vm: id }).sort('-start').exec()
+      .then(events => {
+        return res.json(events);
+      })
+      .catch(err => {
+        console.log(err);
+        return res.status(500).send(err);
+      })
+  });
+
+  router.get('/vm/usage', (req, res) => {
+    let id = req.query['id'];
+
+    console.log('asdklfj');
+
+    if(!id){
+      return res.status(400).send('VM Id required');
+    }
+
+    function getPrice(event) {
+      switch(event.type) {
+        case 'Basic':
+            return 5;
+        case 'Large':
+            return 10;
+        case 'Ultra Large':
+            return 15;
+        default:
+            return 0;
+      }
+    }
+
+    function getRunningTime(event) {
+      const secondsStarting = event.start.getTime() / 1000;
+      const secondsEnding = event.end.getTime() / 1000;
+
+      const totalTimeSeconds = secondsEnding - secondsStarting;
+
+      if(totalTimeSeconds < 60) {
+          return 1;
+      }
+
+      return ~~(totalTimeSeconds / 60);
+    }
+
+    async function getUsage() {
+      const events = await Event.find({ vm: id }).sort('-start').exec();
+      
+      let totalCost = 0;
+
+      for(let i = 0; i < events.length; ++i) {
+        totalCost += getPrice(events[i]) * getRunningTime(events[i]);
+      }
+
+      return totalCost;
+    }
+
+    getUsage().then((totalCost) => {
+      return res.json({
+        cost: totalCost,
+      });
+    })
+    .catch(err => {
+      return res.status(500).send(err);
+    });
   });
 };
