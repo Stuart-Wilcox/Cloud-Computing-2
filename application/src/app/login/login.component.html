@@ -31,7 +31,7 @@
     <mat-card-actions>
       <button mat-raised-button (click)="login()" color="primary">Login</button>
       <span></span>
-      <a href="http://localhost:4200/register"><button mat-raised-button color="primary">Register</button></a>
+      <a [routerLink]="['/register']"><button mat-raised-button color="primary">Register</button></a>
     </mat-card-actions>
 </mat-card>
 

@@ -1,7 +1,7 @@
 <ul>
-  <li><a href="">Home</a></li>
-
+  <li><a [routerLink]="['/dashboard']">Home</a></li>
+  <li><a [routerLink]="['/create-vm']">Create VMs</a></li>
 
   
-  <li style="float:right"><a class="active" (click)="onLogoutClick()" href="#">logout</a></li>
+  <li style="float:right"><a class="active" (click)="onLogoutClick()">logout</a></li>
 </ul>

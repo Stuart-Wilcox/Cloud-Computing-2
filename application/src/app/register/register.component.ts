@@ -18,8 +18,12 @@ export class RegisterComponent implements OnInit {
     private authService: AuthService,
     private router: Router
     ) { this.err = ''; }
-  ngOnInit() {
+
+
+    ngOnInit() {
   }
+
+
    register() {
     const user = {
       name: this.name,
@@ -35,7 +39,6 @@ export class RegisterComponent implements OnInit {
 
     // Register user
     this.authService.register(this.username, this.password).then(result => {
-      alert('You are now registered');
       this.router.navigate(['/']);
     }).catch(err => {
       this.err = 'Something went wrong';
