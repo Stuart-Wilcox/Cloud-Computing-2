@@ -70,7 +70,7 @@ module.exports = (router) => {
     VM.findByIdAndDelete(id).exec()
     .then((vm, err) => {
       if(!vm || err) throw new Error('Unable to delete');
-      res.send('Success');
+      res.json({msg:'Success'})
     })
     .catch(err => {
       console.error(err);
