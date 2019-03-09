@@ -262,9 +262,6 @@ module.exports = (router) => {
 
   router.get('/vm/usage', (req, res) => {
     let id = req.query['id'];
-
-    console.log('asdklfj');
-
     if(!id){
       return res.status(400).send('VM Id required');
     }
