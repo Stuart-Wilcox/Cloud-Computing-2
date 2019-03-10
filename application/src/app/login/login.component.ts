@@ -30,7 +30,7 @@ export class LoginComponent implements OnInit {
   ngOnInit() {
   }
 
-  dismiss(){
+  dismiss() {
     this.loginError = false;
   }
 
@@ -45,6 +45,6 @@ export class LoginComponent implements OnInit {
       this.loading = false;
       this.loginError = true;
       console.error(err);
-    })
+    });
   }
 }
