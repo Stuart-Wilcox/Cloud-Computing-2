@@ -5,7 +5,6 @@ import { LoginComponent } from './login/login.component';
 import { DashboardComponent } from './dashboard/dashboard.component';
 import { ViewVmComponent } from './view-vm/view-vm.component';
 import { CreateVmComponent } from './create-vm/create-vm.component';
-import { DeleteVmComponent } from './delete-vm/delete-vm.component';
 import { StartVmComponent } from './start-vm/start-vm.component';
 import { StopVmComponent } from './stop-vm/stop-vm.component';
 import { DowngradeVmComponent } from './downgrade-vm/downgrade-vm.component';
@@ -38,11 +37,6 @@ const routes: Routes = [
   {
     path: 'create-vm',
     component: CreateVmComponent,
-    canActivate: [AuthGuard],
-  },
-  {
-    path: 'delete-vm/:id',
-    component: DeleteVmComponent,
     canActivate: [AuthGuard],
   },
   {

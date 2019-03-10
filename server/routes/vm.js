@@ -39,7 +39,7 @@ module.exports = (router) => {
   });
 
   router.post('/vm', (req, res) => {
-    let { name, type } = body;
+    let { name, type } = req.body;
 
     if(!name || !type) {
       return res.status(400).send('fields \'name\' and \'type\' are required');
@@ -70,7 +70,7 @@ module.exports = (router) => {
     VM.findByIdAndDelete(id).exec()
     .then((vm, err) => {
       if(!vm || err) throw new Error('Unable to delete');
-      res.send('Success');
+      res.json({msg:'Success'})
     })
     .catch(err => {
       console.error(err);

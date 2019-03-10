@@ -3,7 +3,7 @@ const Schema = mongoose.Schema;
 
 const VM = mongoose.model('VM', {
   user: { type: Schema.Types.ObjectId, ref: 'User' },
-  name: String,
+  name: { type: String, unique: true },
   type: String,
   processorCores: Number,
   virtualRam: Number,
