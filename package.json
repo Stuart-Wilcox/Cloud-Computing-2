@@ -4,7 +4,7 @@
   "description": "## Instructions In this assignment you are going to implement the cloud  usage monitor as explained in Unit 4. In order to develop this agent you should consider other important roles needed by the cloud  usage monitor to fulfill its job as shown in the figure below :",
   "main": "index.js",
   "scripts": {
-    "start": "node server/server.js",
+    "start": "cd server && node server.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {

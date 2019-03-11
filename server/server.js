@@ -5,7 +5,7 @@ const cookieParser = require('cookie-parser');
 const routes = require('./routes');
 const { login, register } = require('./auth');
 
-const isLocal = false; // change this when working locally
+const isLocal = true; // change this when working locally
 
 const host = '127.0.0.1';
 const port = isLocal ? 8080 : process.env.PORT;
