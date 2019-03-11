@@ -9,6 +9,7 @@ const VM = mongoose.model('VM', {
   virtualRam: Number,
   storageSpace: Number,
   price: Number,
+  status: Boolean,
 });
 
 VM.clean = () => {
@@ -24,6 +25,7 @@ VM.getBasicInstance = (user, name) => {
     virtualRam: 16,
     storageSpace: 20,
     price: 5,
+    running: false,
   });
 };
 
@@ -36,6 +38,7 @@ VM.getLargeInstance = (user, name) => {
     virtualRam: 64,
     storageSpace: 20,
     price: 10,
+    running: false,
   });
 };
 
@@ -48,6 +51,7 @@ VM.getUltraLargeInstance = (user, name) => {
     virtualRam: 512,
     storageSpace: 40,
     price: 15,
+    running: false,
   });
 };
 
