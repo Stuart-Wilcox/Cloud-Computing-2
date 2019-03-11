@@ -16,5 +16,14 @@
   "bugs": {
     "url": "https://github.com/Stuart-Wilcox/SE4455-assignment-2/issues"
   },
-  "homepage": "https://github.com/Stuart-Wilcox/SE4455-assignment-2#readme"
+  "homepage": "https://github.com/Stuart-Wilcox/SE4455-assignment-2#readme",
+  "dependencies": {
+    "bcrypt": "^3.0.4",
+    "body-parser": "^1.18.3",
+    "cookie-parser": "^1.4.4",
+    "express": "^4.16.4",
+    "express-jwt": "^5.3.1",
+    "jsonwebtoken": "^8.5.0",
+    "mongoose": "^5.4.18"
+  }
 }
