@@ -1,3 +1,4 @@
+const fs = require('fs');
 const express = require('express');
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
@@ -20,6 +21,16 @@ app.use((req,res,next) => {
   next();
 });
 app.use(express.static('static'));
+app.use((req,res,next) => {
+  // if the path is api stuff then allow it to go there, otherwise send it the SPA
+  if(req.path.startsWith('/api') || req.path.startsWith('/public-api')){
+    return next();
+  }
+
+  // manually send the page
+  let page = fs.readFileSync('static/index.html');
+  res.set('Content-Type', 'text/html').send(page);
+});
 
 routes(router);
 app.use('/api', router);
