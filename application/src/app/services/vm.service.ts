@@ -73,4 +73,5 @@ export class VMService {
       .post<any>(`api/vm/stop?id=${id}`, {}, {headers: this.auth.getHttpHeaders()})
       .toPromise();
   }
+
 }
