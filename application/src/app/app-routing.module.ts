@@ -7,7 +7,6 @@ import { ViewVmComponent } from './view-vm/view-vm.component';
 import { CreateVmComponent } from './create-vm/create-vm.component';
 import { StartVmComponent } from './start-vm/start-vm.component';
 import { StopVmComponent } from './stop-vm/stop-vm.component';
-import { DowngradeVmComponent } from './downgrade-vm/downgrade-vm.component';
 import { UsageComponent } from './usage/usage.component';
 import { ChargesComponent } from './charges/charges.component';
 import {RegisterComponent} from './register/register.component';
@@ -47,11 +46,6 @@ const routes: Routes = [
   {
     path: 'stop-vm/:id',
     component: StopVmComponent,
-    canActivate: [AuthGuard],
-  },
-  {
-    path: 'downgrade-vm/:id',
-    component: DowngradeVmComponent,
     canActivate: [AuthGuard],
   },
   {
