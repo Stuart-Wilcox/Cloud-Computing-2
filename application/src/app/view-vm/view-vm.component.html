@@ -35,12 +35,10 @@
       </a>
       <button *ngIf="vm.type == 'Basic'" mat-raised-button color="accent" disabled>Downgrade</button>
 
-      <a [routerLink]="['/start-vm', vm._id]">
-        <button *ngIf="vm.status=='stopped'" mat-stroked-button color="primary">Start</button>
+      <a>
+        <button *ngIf="vm.status!=true" mat-stroked-button color="primary" (click) = "startVM()">Start</button>
       </a>
-      <a [routerLink]="['/stop-vm', vm._id]">
-        <button *ngIf="vm.status=='running'" mat-stroked-button color="warn">Stop</button>
-      </a>
+      <button *ngIf="vm.status==true" mat-stroked-button color="warn" (click) ="stopVM()">Stop</button>
 
       <a [routerLink]="['/usage', vm._id]">
         <button mat-raised-button>Usage</button>

@@ -60,4 +60,23 @@ export class ViewVmComponent implements OnInit {
       this.snackBar.open("Error. VM Downgrade Failed.", '', {duration: 1000});
     });
   }
+
+
+  startVM(){
+    this.vmService.startVM(this.id).then((vm) => {
+      this.snackBar.open("VM started Successfully.", '', {duration: 1000});
+      this.vm = vm;
+    }).catch(err => {
+      this.snackBar.open("Error. VM start Failed.", '', {duration: 1000});
+    });
+  }
+
+  stopVM(){
+    this.vmService.stopVM(this.id).then((vm) => {
+      this.snackBar.open("VM stopped Successfully.", '', {duration: 1000});
+      this.vm = vm;
+    }).catch(err => {
+      this.snackBar.open("Error. VM stop Failed.", '', {duration: 1000});
+    });
+  }
 }
