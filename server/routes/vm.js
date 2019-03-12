@@ -193,20 +193,20 @@ module.exports = (router) => {
 
     async function startVM() {
       const vm = await VM.findById(id);
-      const events = await Event.find({ vm: id }).sort('-start').exec();
-      const lastEvent = events[0];
 
-      // Check to make sure VM is not running; `end` is not supposed to have a value
-      if(lastEvent && !lastEvent.end) {
+      // Check to make sure VM is not running
+      if(vm.status) {
         return res.status(400).send('VM already running');
       } else {
         const event = Event.createEvent(id, vm.type);
-        return await event.save();
+        vm.status = true;
+        await event.save();
+        return await vm.save();
       }
     }
 
-    startVM().then(event => {
-      return res.json(event);
+    startVM().then(vm => {
+      return res.json(vm);
     })
     .catch(err => {
       console.log(err);
@@ -222,20 +222,23 @@ module.exports = (router) => {
     }
 
     async function stopVM() {
+      const vm = await VM.findById(id);
       const events = await Event.find({ vm: id }).sort('-start').exec();
       const lastEvent = events[0];
 
-      if(lastEvent && lastEvent.end) {
-        return res.status(400).send('VM already running');
+      if(!vm.status) {
+        return res.status(400).send('VM already stopped');
       } else {
         lastEvent.end = Date.now();
-        return await lastEvent.save();
+        vm.status = false;
+        await lastEvent.save();
+        return await vm.save();
       }
     }
 
     stopVM()
-      .then(event => {
-        return res.json(event);
+      .then(vm => {
+        return res.json(vm);
       })
       .catch(err => {
         console.log(err);
