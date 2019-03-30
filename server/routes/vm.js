@@ -132,7 +132,7 @@ module.exports = (router) => {
       const options = createRequestOpts('upgrade', id, vm.type, req.token);
       const event = await request(options);
 
-      return {vm, event};
+      return vm;
     }
 
     upgradeVM().then(vm => {
@@ -176,7 +176,7 @@ module.exports = (router) => {
       const options = createRequestOpts('downgrade', id, vm.type, req.token);
       const event = await request(options);
 
-      return { vm, event };
+      return vm;
     }
 
     downgradeVM()
@@ -209,7 +209,7 @@ module.exports = (router) => {
         const options = createRequestOpts('start', id, vm.type, req.token);
         const event = await request(options);
 
-        return {vm, event};
+        return vm;
       }
     }
 
@@ -241,7 +241,7 @@ module.exports = (router) => {
         const options = createRequestOpts('stop', id, vm.type, req.token);
         const event = await request(options);
 
-        return {vm, event};
+        return vm;
       }
     }
 
@@ -313,9 +313,7 @@ module.exports = (router) => {
     };
 
     request(options).then((time) => {
-      return res.json({
-        time,
-      });
+      return res.json(time);
     })
     .catch(err => {
       return res.status(500).send(err);

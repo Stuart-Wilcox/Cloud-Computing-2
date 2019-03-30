@@ -18,6 +18,7 @@ function getPrice(event) {
 function getRunningTime(event) {
     const secondsStarting = event.start.getTime() / 1000;
 
+    // Check if there's an ending time, otherwise use current time
     const secondsEnding = (() => {
         if(event.end) {
             return event.end.getTime() / 1000;
@@ -27,8 +28,6 @@ function getRunningTime(event) {
     })();
 
     const totalTimeSeconds = secondsEnding - secondsStarting;
-
-    console.log(totalTimeSeconds);
 
     if(totalTimeSeconds < 60) {
         return 1;
@@ -86,7 +85,6 @@ module.exports = (router) => {
     // Returns the total running time for the VM
     router.get('/usage/time', (req, res) => {
         const id = req.query['id'];
-        console.log(id);
 
         if(!id){
             return res.status(400).send('VM Id required');

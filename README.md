@@ -1,6 +1,9 @@
 # SE4455 Assignment 2: Resource Usage Agent
 #### Due Date: March 6, 2019
 
+## Installation Notes
+Read the `README` in the [server](server/README.md) and [usage](usage/README.md) directories.
+
 ## Instructions
 In this assignment you are going to implement the cloud  usage monitor as explained in Unit 4. In order to develop this agent you should consider other important roles needed by the cloud  usage monitor to fulfill its job as shown in the figure below :
 
