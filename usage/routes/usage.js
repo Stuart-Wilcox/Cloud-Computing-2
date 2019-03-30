@@ -1,9 +1,190 @@
+function getPrice(event) {
+    switch(event.type) {
+        case 'Basic':
+            return 5;
+        case 'Large':
+            return 10;
+        case 'Ultra Large':
+            return 15;
+        default:
+            return 0;
+    }
+}
+
+function getRunningTime(event) {
+    const secondsStarting = event.start.getTime() / 1000;
+    const secondsEnding = event.end.getTime() / 1000;
+
+    const totalTimeSeconds = secondsEnding - secondsStarting;
+
+    if(totalTimeSeconds < 60) {
+        return 1;
+    }
+
+    return ~~(totalTimeSeconds / 60);
+}
+
+async function getTotalRunningTime(id) {
+    const events = await Event.find({ vm: id }).sort('-start').exec();
+    
+    let totalTime = 0;
+
+    for(let i = 0; i < events.length; ++i) {
+        totaltime += getRunningTime(events[i]);
+    }
+
+    return totalTime;
+}
+
+async function getUsage(id) {
+    const events = await Event.find({ vm: id }).sort('-start').exec();
+    
+    let totalCost = 0;
+
+    for(let i = 0; i < events.length; ++i) {
+        totalCost += getPrice(events[i]) * getRunningTime(events[i]);
+    }
+
+    return totalCost;
+}
+
 module.exports = (router) => {
+    // Returns the cost, in cents, of the VM
     router.get('/usage', (req, res) => {
         let id = req.query['id'];
 
-        // TODO implement usage. Calculate the previous events for the VM and figure it out
-        res.send('usage works!');
+        if(!id){
+            return res.status(400).send('VM Id required');
+        }
+
+        getUsage(id).then((totalCost) => {
+            return res.json({
+                    cost: totalCost,
+                });
+            })
+            .catch(err => {
+            return res.status(500).send(err);
+        });
+    });
+
+    // Returns the total running time for the VM
+    router.get('/usage/time', (req, res) => {
+        const id = req.query['id'];
+
+        if(!id){
+            return res.status(400).send('VM Id required');
+        }
+
+        getTotalRunningTime(id).then((totalTime) => {
+            return res.json({
+                time: totalTime,
+            });
+        }).catch(err => {
+            return res.status(500).send(err);
+        });
+    });
+
+    // Creates an event for VM start
+    router.post('/usage/start', (req, res) => {
+        const id = req.query.id;
+
+        if(!id) {
+            return res.status(400).send('VM Id required');
+        }
+
+        async function startVM() {
+            const event = Event.createEvent(id, vm.type);
+            return await event.save();
+        }
+
+        startVM().then(event => {
+            return res.json(event);
+        }).catch(err => {
+            return res.status(500).json(err);
+        });
+    });
+
+    // Creates an event for VM stop
+    router.post('/usage/stop', (req, res) => {
+        const id = req.query.id;
+
+        if(!id) {
+            return res.status(400).send('VM Id required');
+        }
+
+        async function stopVM() {
+            const events = await Event.find({ vm: id }).sort('-start').exec();
+            const lastEvent = events[0];
+      
+            lastEvent.end = Date.now();
+            return await lastEvent.save();
+        }
+
+        stopVM().then(event => {
+            return res.json(event);
+        }).catch(err => {
+            return res.status(500).json(err);
+        });
+    });
+
+    // Creates an event for VM upgrade
+    router.post('/usage/upgrade', (req, res) => {
+        const id = req.query.id;
+
+        if(!id) {
+            return res.status(400).send('VM Id required');
+        }
+
+        async function upgradeVM() {
+            let events = await Event.find({ vm: id }).sort('-start').exec();
+            const event = events[0];
+
+            // If VM is still running, we need to add a new event so we can keep
+            // track of the new cost
+            if(event && !event.end) {
+                event.end = Date.now();
+                await event.save();
+
+                const upgradeEvent = Event.createEvent(id, vm.type);
+                return await upgradeEvent.save();
+            }
+        }
+
+        upgradeVM().then(event => {
+            return res.json(event);
+        }).catch(err => {
+            res.status(500).json(err);
+        });
+    });
+
+    // Creates an event for VM downgrade
+    router.post('/usage/downgrade', (req, res) => {
+        const id = req.query.id;
+
+        if(!id) {
+            return res.status(400).send('VM Id required');
+        }
+
+        async function downgradeVM() {
+            let events = await Event.find({ vm: id }).sort('-start').exec();
+            const event = events[0];
+
+            // If VM is still running, we need to add a new event so we can keep
+            // track of the new cost
+            if(event && !event.end) {
+                event.end = Date.now();
+                await event.save();
+
+                const downgradeEvent = Event.createEvent(id, vm.type);
+                return await downgradeEvent.save();
+            }
+        }
+
+        downgradeVM().then(event => {
+            return res.json(event);
+        }).catch(err => {
+            return res.status(500).json(err);
+        });
     });
 
     router.post('/usage', (req, res) => {
