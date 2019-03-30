@@ -1,5 +1,26 @@
 const VM = require('../models/VM');
 const Event = require('../models/Event');
+const request = require('request-promise');
+const queryString = require('querystring');
+
+const USAGE_HOST = process.env.USAGE_HOST;
+const USAGE_PORT = process.env.USAGE_PORT;
+const USAGE_URL = `http://${USAGE_HOST}:${USAGE_PORT}/api`;
+
+function createRequestOpts(fn, id, type, token) {
+  const query = queryString.stringify({id, type});
+
+  const options = {
+    method: 'POST',
+    json: true,
+    url: `${USAGE_URL}/usage/${fn}?${query}`,
+    headers: {
+      'x-access-token': token,
+    }
+  };
+
+  return options;
+}
 
 module.exports = (router) => {
   router.get('/vm/offerings', (req, res) => {
@@ -198,10 +219,13 @@ module.exports = (router) => {
       if(vm.status) {
         return res.status(400).send('VM already running');
       } else {
-        const event = Event.createEvent(id, vm.type);
         vm.status = true;
-        await event.save();
-        return await vm.save();
+        await vm.save();
+
+        const options = createRequestOpts('start', id, vm.type, req.token);
+        const event = await request(options);
+
+        return {vm, event};
       }
     }
 
@@ -223,16 +247,17 @@ module.exports = (router) => {
 
     async function stopVM() {
       const vm = await VM.findById(id);
-      const events = await Event.find({ vm: id }).sort('-start').exec();
-      const lastEvent = events[0];
 
       if(!vm.status) {
         return res.status(400).send('VM already stopped');
       } else {
-        lastEvent.end = Date.now();
         vm.status = false;
-        await lastEvent.save();
-        return await vm.save();
+        await vm.save();
+
+        const options = createRequestOpts('stop', id, vm.type, req.token);
+        const event = await request(options);
+
+        return {vm, event};
       }
     }
 

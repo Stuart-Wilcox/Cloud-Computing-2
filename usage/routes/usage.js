@@ -1,3 +1,5 @@
+const Event = require('../models/Event');
+
 function getPrice(event) {
     switch(event.type) {
         case 'Basic':
@@ -87,19 +89,21 @@ module.exports = (router) => {
     // Creates an event for VM start
     router.post('/usage/start', (req, res) => {
         const id = req.query.id;
+        const type = req.query.type;
 
-        if(!id) {
-            return res.status(400).send('VM Id required');
+        if(!id || !type) {
+            return res.status(400).send('VM Id & type required');
         }
 
         async function startVM() {
-            const event = Event.createEvent(id, vm.type);
+            const event = Event.createEvent(id, type);
             return await event.save();
         }
 
         startVM().then(event => {
             return res.json(event);
         }).catch(err => {
+            console.log('err is', err)
             return res.status(500).json(err);
         });
     });
@@ -130,9 +134,10 @@ module.exports = (router) => {
     // Creates an event for VM upgrade
     router.post('/usage/upgrade', (req, res) => {
         const id = req.query.id;
+        const type = req.query.type;
 
-        if(!id) {
-            return res.status(400).send('VM Id required');
+        if(!id || !type) {
+            return res.status(400).send('VM Id & type required');
         }
 
         async function upgradeVM() {
@@ -145,7 +150,7 @@ module.exports = (router) => {
                 event.end = Date.now();
                 await event.save();
 
-                const upgradeEvent = Event.createEvent(id, vm.type);
+                const upgradeEvent = Event.createEvent(id, type);
                 return await upgradeEvent.save();
             }
         }
@@ -160,9 +165,10 @@ module.exports = (router) => {
     // Creates an event for VM downgrade
     router.post('/usage/downgrade', (req, res) => {
         const id = req.query.id;
+        const type = req.query.type;
 
-        if(!id) {
-            return res.status(400).send('VM Id required');
+        if(!id || !type) {
+            return res.status(400).send('VM Id & type required');
         }
 
         async function downgradeVM() {
@@ -175,7 +181,7 @@ module.exports = (router) => {
                 event.end = Date.now();
                 await event.save();
 
-                const downgradeEvent = Event.createEvent(id, vm.type);
+                const downgradeEvent = Event.createEvent(id, type);
                 return await downgradeEvent.save();
             }
         }
