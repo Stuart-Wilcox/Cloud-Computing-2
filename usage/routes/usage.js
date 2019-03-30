@@ -13,11 +13,22 @@ function getPrice(event) {
     }
 }
 
+// Returns the running time for a single event. If an event doesn't
+// have an end, it uses the current time as the end
 function getRunningTime(event) {
     const secondsStarting = event.start.getTime() / 1000;
-    const secondsEnding = event.end.getTime() / 1000;
+
+    const secondsEnding = (() => {
+        if(event.end) {
+            return event.end.getTime() / 1000;
+        }
+
+        return Date.getTime() / 1000;
+    })();
 
     const totalTimeSeconds = secondsEnding - secondsStarting;
+
+    console.log(totalTimeSeconds);
 
     if(totalTimeSeconds < 60) {
         return 1;
@@ -26,18 +37,20 @@ function getRunningTime(event) {
     return ~~(totalTimeSeconds / 60);
 }
 
+// Returns total running time in minutes
 async function getTotalRunningTime(id) {
     const events = await Event.find({ vm: id }).sort('-start').exec();
     
     let totalTime = 0;
 
     for(let i = 0; i < events.length; ++i) {
-        totaltime += getRunningTime(events[i]);
+        totalTime += getRunningTime(events[i]);
     }
 
     return totalTime;
 }
 
+// Returns the total cost of a VM in cents
 async function getUsage(id) {
     const events = await Event.find({ vm: id }).sort('-start').exec();
     
@@ -65,6 +78,7 @@ module.exports = (router) => {
                 });
             })
             .catch(err => {
+                console.log(err);
             return res.status(500).send(err);
         });
     });
@@ -72,6 +86,7 @@ module.exports = (router) => {
     // Returns the total running time for the VM
     router.get('/usage/time', (req, res) => {
         const id = req.query['id'];
+        console.log(id);
 
         if(!id){
             return res.status(400).send('VM Id required');
@@ -191,13 +206,6 @@ module.exports = (router) => {
         }).catch(err => {
             return res.status(500).json(err);
         });
-    });
-
-    router.post('/usage', (req, res) => {
-        let id = req.query['id'];
-
-        // TODO implement. save the given event
-        res.send('usage works!');
     });
 };
   

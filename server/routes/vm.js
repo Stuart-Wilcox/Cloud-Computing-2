@@ -127,20 +127,12 @@ module.exports = (router) => {
         vm.price = 10;
       }
 
-      let events = await Event.find({ vm: id }).sort('-start').exec();
-      const event = events[0];
+      await vm.save();
 
-      // If VM is still running, we need to add a new event so we can keep
-      // track of the new cost
-      if(event && !event.end) {
-        event.end = Date.now();
-        await event.save();
+      const options = createRequestOpts('upgrade', id, vm.type, req.token);
+      const event = await request(options);
 
-        const upgradeEvent = Event.createEvent(id, vm.type);
-        await upgradeEvent.save();
-      }
-
-      return await vm.save();
+      return {vm, event};
     }
 
     upgradeVM().then(vm => {
@@ -179,20 +171,12 @@ module.exports = (router) => {
         vm.price = 10;
       }
 
-      let events = await Event.find({ vm: id }).sort('-start').exec();
-      const event = events[0];
+      await vm.save();
 
-      // If VM is still running, we need to add a new event so we can keep
-      // track of the new cost
-      if(event && !event.end) {
-        event.end = Date.now();
-        await event.save();
+      const options = createRequestOpts('downgrade', id, vm.type, req.token);
+      const event = await request(options);
 
-        const downgradeEvent = Event.createEvent(id, vm.type);
-        await downgradeEvent.save();
-      }
-
-      return await vm.save();
+      return { vm, event };
     }
 
     downgradeVM()
@@ -294,47 +278,43 @@ module.exports = (router) => {
       return res.status(400).send('VM Id required');
     }
 
-    function getPrice(event) {
-      switch(event.type) {
-        case 'Basic':
-            return 5;
-        case 'Large':
-            return 10;
-        case 'Ultra Large':
-            return 15;
-        default:
-            return 0;
+    const options = {
+      method: 'GET',
+      json: true,
+      url: `${USAGE_URL}/usage?id=${id}`,
+      headers: {
+        'x-access-token': req.token,
       }
-    }
+    };
 
-    function getRunningTime(event) {
-      const secondsStarting = event.start.getTime() / 1000;
-      const secondsEnding = event.end.getTime() / 1000;
-
-      const totalTimeSeconds = secondsEnding - secondsStarting;
-
-      if(totalTimeSeconds < 60) {
-          return 1;
-      }
-
-      return ~~(totalTimeSeconds / 60);
-    }
-
-    async function getUsage() {
-      const events = await Event.find({ vm: id }).sort('-start').exec();
-      
-      let totalCost = 0;
-
-      for(let i = 0; i < events.length; ++i) {
-        totalCost += getPrice(events[i]) * getRunningTime(events[i]);
-      }
-
-      return totalCost;
-    }
-
-    getUsage().then((totalCost) => {
+    request(options).then((totalCost) => {
       return res.json({
         cost: totalCost,
+      });
+    })
+    .catch(err => {
+      return res.status(500).send(err);
+    });
+  });
+
+  router.get('/vm/time', (req, res) => {
+    const id = req.query['id'];
+    if(!id){
+      return res.status(400).send('VM Id required');
+    }
+
+    const options = {
+      method: 'GET',
+      json: true,
+      url: `${USAGE_URL}/usage/time?id=${id}`,
+      headers: {
+        'x-access-token': req.token,
+      }
+    };
+
+    request(options).then((time) => {
+      return res.json({
+        time,
       });
     })
     .catch(err => {
