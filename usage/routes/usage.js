@@ -74,9 +74,7 @@ module.exports = (router) => {
 
         getUsage(id).then((totalCost) => {
             logger.info(`GET /usage?id=${id}: ${totalCost}`);
-            return res.json({
-                    cost: totalCost,
-                });
+            return res.json(totalCost);
             })
             .catch(err => {
                 logger.error(`GET /usage?id=${id}:`);
