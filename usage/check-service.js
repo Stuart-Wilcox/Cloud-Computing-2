@@ -28,7 +28,7 @@ async function main() {
         } catch(err) {
             const mailOptions = {
                 from: 'the.one.brogrammers.inc@gmail.com',
-                to: 'aszepess@uwo.ca',
+                to: process.env.LOG_EMAIL,
                 subject: 'Cloud Usage Monitor Down!',
                 text: 'Cloud Usage Monitor is Down!\n\n' + err,
                 attachments: [
