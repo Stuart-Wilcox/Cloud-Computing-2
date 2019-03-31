@@ -20,6 +20,9 @@ app.use((req,res,next) => {
 });
 
 routes(router);
+app.use('/status', (req, res) => {
+  res.json('Running');
+});
 app.use('/api', router);
 
 app.listen(PORT, () => console.log(`Listening at port ${PORT}`));
