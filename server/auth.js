@@ -13,6 +13,7 @@ module.exports = {
     }).then((user, err) => {
       if(err || !user || user.length==0) throw new Error('Invalid token');
       req.user = user[0];
+      req.token = token;
       return next()
     }).catch(err => {
       console.error(err);

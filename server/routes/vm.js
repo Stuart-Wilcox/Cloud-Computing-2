@@ -1,5 +1,26 @@
 const VM = require('../models/VM');
 const Event = require('../models/Event');
+const request = require('request-promise');
+const queryString = require('querystring');
+
+const USAGE_HOST = process.env.USAGE_HOST;
+const USAGE_PORT = process.env.USAGE_PORT;
+const USAGE_URL = `http://${USAGE_HOST}:${USAGE_PORT}/api`;
+
+function createRequestOpts(fn, id, type, token) {
+  const query = queryString.stringify({id, type});
+
+  const options = {
+    method: 'POST',
+    json: true,
+    url: `${USAGE_URL}/usage/${fn}?${query}`,
+    headers: {
+      'x-access-token': token,
+    }
+  };
+
+  return options;
+}
 
 module.exports = (router) => {
   router.get('/vm/offerings', (req, res) => {
@@ -106,20 +127,12 @@ module.exports = (router) => {
         vm.price = 10;
       }
 
-      let events = await Event.find({ vm: id }).sort('-start').exec();
-      const event = events[0];
+      await vm.save();
 
-      // If VM is still running, we need to add a new event so we can keep
-      // track of the new cost
-      if(event && !event.end) {
-        event.end = Date.now();
-        await event.save();
+      const options = createRequestOpts('upgrade', id, vm.type, req.token);
+      const event = await request(options);
 
-        const upgradeEvent = Event.createEvent(id, vm.type);
-        await upgradeEvent.save();
-      }
-
-      return await vm.save();
+      return vm;
     }
 
     upgradeVM().then(vm => {
@@ -158,20 +171,12 @@ module.exports = (router) => {
         vm.price = 10;
       }
 
-      let events = await Event.find({ vm: id }).sort('-start').exec();
-      const event = events[0];
+      await vm.save();
 
-      // If VM is still running, we need to add a new event so we can keep
-      // track of the new cost
-      if(event && !event.end) {
-        event.end = Date.now();
-        await event.save();
+      const options = createRequestOpts('downgrade', id, vm.type, req.token);
+      const event = await request(options);
 
-        const downgradeEvent = Event.createEvent(id, vm.type);
-        await downgradeEvent.save();
-      }
-
-      return await vm.save();
+      return vm;
     }
 
     downgradeVM()
@@ -198,10 +203,13 @@ module.exports = (router) => {
       if(vm.status) {
         return res.status(400).send('VM already running');
       } else {
-        const event = Event.createEvent(id, vm.type);
         vm.status = true;
-        await event.save();
-        return await vm.save();
+        await vm.save();
+
+        const options = createRequestOpts('start', id, vm.type, req.token);
+        const event = await request(options);
+
+        return vm;
       }
     }
 
@@ -223,16 +231,17 @@ module.exports = (router) => {
 
     async function stopVM() {
       const vm = await VM.findById(id);
-      const events = await Event.find({ vm: id }).sort('-start').exec();
-      const lastEvent = events[0];
 
       if(!vm.status) {
         return res.status(400).send('VM already stopped');
       } else {
-        lastEvent.end = Date.now();
         vm.status = false;
-        await lastEvent.save();
-        return await vm.save();
+        await vm.save();
+
+        const options = createRequestOpts('stop', id, vm.type, req.token);
+        const event = await request(options);
+
+        return vm;
       }
     }
 
@@ -269,48 +278,40 @@ module.exports = (router) => {
       return res.status(400).send('VM Id required');
     }
 
-    function getPrice(event) {
-      switch(event.type) {
-        case 'Basic':
-            return 5;
-        case 'Large':
-            return 10;
-        case 'Ultra Large':
-            return 15;
-        default:
-            return 0;
+    const options = {
+      method: 'GET',
+      json: true,
+      url: `${USAGE_URL}/usage?id=${id}`,
+      headers: {
+        'x-access-token': req.token,
       }
+    };
+
+    request(options).then((totalCost) => {
+      return res.json(totalCost);
+    })
+    .catch(err => {
+      return res.status(500).send(err);
+    });
+  });
+
+  router.get('/vm/time', (req, res) => {
+    const id = req.query['id'];
+    if(!id){
+      return res.status(400).send('VM Id required');
     }
 
-    function getRunningTime(event) {
-      const secondsStarting = event.start.getTime() / 1000;
-      const secondsEnding = event.end.getTime() / 1000;
-
-      const totalTimeSeconds = secondsEnding - secondsStarting;
-
-      if(totalTimeSeconds < 60) {
-          return 1;
+    const options = {
+      method: 'GET',
+      json: true,
+      url: `${USAGE_URL}/usage/time?id=${id}`,
+      headers: {
+        'x-access-token': req.token,
       }
+    };
 
-      return ~~(totalTimeSeconds / 60);
-    }
-
-    async function getUsage() {
-      const events = await Event.find({ vm: id }).sort('-start').exec();
-      
-      let totalCost = 0;
-
-      for(let i = 0; i < events.length; ++i) {
-        totalCost += getPrice(events[i]) * getRunningTime(events[i]);
-      }
-
-      return totalCost;
-    }
-
-    getUsage().then((totalCost) => {
-      return res.json({
-        cost: totalCost,
-      });
+    request(options).then((time) => {
+      return res.json(time);
     })
     .catch(err => {
       return res.status(500).send(err);
