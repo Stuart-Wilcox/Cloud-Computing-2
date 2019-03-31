@@ -25,7 +25,7 @@ function getRunningTime(event) {
             return event.end.getTime() / 1000;
         }
 
-        return Date.getTime() / 1000;
+        return Date.now() / 1000;
     })();
 
     const totalTimeSeconds = secondsEnding - secondsStarting;
