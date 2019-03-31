@@ -1,4 +1,5 @@
 const Event = require('../models/Event');
+const logger = require('../logger');
 
 function getPrice(event) {
     switch(event.type) {
@@ -72,12 +73,14 @@ module.exports = (router) => {
         }
 
         getUsage(id).then((totalCost) => {
+            logger.info(`GET /usage?id=${id}: ${totalCost}`);
             return res.json({
                     cost: totalCost,
                 });
             })
             .catch(err => {
-                console.log(err);
+                logger.error(`GET /usage?id=${id}:`);
+                logger.error(err);
             return res.status(500).send(err);
         });
     });
@@ -91,10 +94,13 @@ module.exports = (router) => {
         }
 
         getTotalRunningTime(id).then((totalTime) => {
+            logger.info(`GET /usage/time?id=${id}: ${totalTime}`);
             return res.json({
                 time: totalTime,
             });
         }).catch(err => {
+            logger.error(`GET /usage/time?id=${id}:`);
+            logger.error(err);
             return res.status(500).send(err);
         });
     });
@@ -114,9 +120,12 @@ module.exports = (router) => {
         }
 
         startVM().then(event => {
+            logger.info(`POST /usage/start?id=${id}&type=${type}:`);
+            logger.info(event);
             return res.json(event);
         }).catch(err => {
-            console.log('err is', err)
+            logger.error(`POST /usage/start?id=${id}&type=${type}:`);
+            logger.error(err);
             return res.status(500).json(err);
         });
     });
@@ -138,8 +147,12 @@ module.exports = (router) => {
         }
 
         stopVM().then(event => {
+            logger.info(`POST /usage/stop?id=${id}:`);
+            logger.info(event);
             return res.json(event);
         }).catch(err => {
+            logger.error(`POST /usage/start?id=${id}:`);
+            logger.error(err);
             return res.status(500).json(err);
         });
     });
@@ -169,8 +182,12 @@ module.exports = (router) => {
         }
 
         upgradeVM().then(event => {
+            logger.info(`POST /usage/upgrade?id=${id}&type=${type}:`);
+            logger.info(event);
             return res.json(event);
         }).catch(err => {
+            logger.error(`POST /usage/start?id=${id}&type=${type}:`);
+            logger.error(err);
             res.status(500).json(err);
         });
     });
@@ -200,8 +217,12 @@ module.exports = (router) => {
         }
 
         downgradeVM().then(event => {
+            logger.info(`POST /usage/stop?id=${id}&type=${type}:`);
+            logger.info(event);
             return res.json(event);
         }).catch(err => {
+            logger.error(`POST /usage/start?id=${id}&type=${type}:`);
+            logger.error(err);            
             return res.status(500).json(err);
         });
     });
