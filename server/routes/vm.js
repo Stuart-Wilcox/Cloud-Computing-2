@@ -288,7 +288,7 @@ module.exports = (router) => {
     };
 
     request(options).then((totalCost) => {
-      return res.json(totalCost);
+      return res.json({cost: totalCost});
     })
     .catch(err => {
       return res.status(500).send(err);
